@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ischool.Prep — Next-Gen Exam Suite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Последняя версия Desmos Calculator API v1.11 -->
+  <script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+  <style>
+    body { 
+      user-select: none; 
+      background: radial-gradient(circle at top right, #1e1b4b, #0f172a, #020617);
+      min-height: 100vh;
+    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white">
+
+  <!-- HEADER NAVIGATION -->
+  <header class="backdrop-blur-md bg-slate-900/80 border-b border-slate-800/80 sticky top-0 z-40 px-6 py-4 flex justify-between items-center shadow-2xl">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30 text-white font-black text-lg">
+        i
+      </div>
+      <div>
+        <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
+          Ischool.<span class="text-blue-400">Prep</span>
+        </h1>
+        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Next-Gen Secure Exam Engine</p>
+      </div>
+    </div>
+    <div id="userInfo" class="text-xs font-medium bg-slate-800/80 border border-slate-700/50 px-4 py-2 rounded-full text-slate-300 shadow-inner">
+      Not Authenticated
+    </div>
+  </header>
+
+  <!-- SECURITY WARNING TOAST -->
+  <div id="cheatWarning" class="hidden fixed top-6 right-6 bg-red-500/95 backdrop-blur-md border border-red-400/50 text-white px-5 py-4 rounded-2xl shadow-2xl z-50 animate-bounce flex items-center gap-3">
+    <span class="text-xl">⚠️</span>
+    <div>
+      <h5 class="font-bold text-sm">Security Alert!</h5>
+      <p class="text-xs text-red-100">Tab switch, focus loss, or ESC key detected. Instructor notified.</p>
+    </div>
+  </div>
+
+  <!-- EXAM RESULT & REVIEW MODAL -->
+  <div id="resultModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700/80 p-8 rounded-3xl max-w-2xl w-full text-center space-y-5 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col">
+      <div id="resultBadge" class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center text-3xl shadow-lg">🏆</div>
+      <div>
+        <h3 id="resultTitle" class="text-2xl font-extrabold text-white">Exam Completed Successfully!</h3>
+        <p id="resultSubtitle" class="text-xs text-slate-400 mt-1">Your performance report has been securely logged.</p>
+      </div>
+      
+      <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-2xl flex justify-around items-center">
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Score</span>
+          <span id="resScore" class="text-xl font-black text-blue-400">0 / 0</span>
+        </div>
+        <div class="h-8 w-px bg-slate-700"></div>
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Violations</span>
+          <span id="resCheats" class="text-xl font-black text-red-400">0</span>
+        </div>
+      </div>
+
+      <div class="text-left overflow-y-auto space-y-3 pr-2 flex-1" id="reviewContainer">
+        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Detailed Answer Review:</h4>
+      </div>
+
+      <button onclick="closeResultModal()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/30 shrink-0">
+        Return to Student Dashboard
+      </button>
+    </div>
+  </div>
+
+  <!-- LATEST DESMOS SIDEBAR (LEFT SCREEN) -->
+  <div id="desmosSidebar" class="hidden fixed left-0 top-[73px] bottom-0 w-1/2 bg-slate-900 border-r border-slate-700/80 z-30 flex flex-col shadow-2xl backdrop-blur-xl">
+    <div class="p-3 bg-slate-800/90 border-b border-slate-700/80 flex justify-between items-center">
+      <h3 class="text-xs font-bold text-blue-400 flex items-center gap-2">🧮 Desmos Graphing Calculator (v1.11)</h3>
+      <button onclick="toggleDesmos()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1 rounded-lg text-xs font-bold transition">✕ Close</button>
+    </div>
+    <div id="calculator" class="w-full flex-1"></div>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main id="mainContainer" class="max-w-6xl mx-auto p-6 mt-4 transition-all duration-300">
+
+    <!-- 1. AUTHENTICATION PORTAL -->
+    <section id="loginScreen" class="bg-slate-800/40 backdrop-blur-xl p-8 rounded-3xl border border-slate-700/50 max-w-md mx-auto mt-12 shadow-2xl shadow-indigo-950/50 relative overflow-hidden">
+      <div class="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-extrabold text-white tracking-tight">Authentication Portal</h2>
+        <p class="text-xs text-slate-400 mt-1">Select your portal role to access Ischool.Prep</p>
+      </div>
+
+      <div class="flex gap-2 mb-6 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-700/50">
+        <button onclick="switchLoginTab('student')" id="tabStudent" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow">Student Portal</button>
+        <button onclick="switchLoginTab('teacher')" id="tabTeacher" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">Instructor Portal</button>
+      </div>
+
+      <!-- STUDENT LOGIN FORM -->
+      <div id="studentLoginForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">First Name</label>
+          <input type="text" id="loginFirstName" placeholder="Murad" class="w-full bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Last Name</label>
+          <input type="text" id="loginLastName" placeholder="Shahmardanov" class="w-full bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Security PIN / Password</label>
+          <input type="password" id="loginStudentPin" placeholder="••••" class="w-full bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl focus:outline-none focus:border-blue-500 text-sm font-mono">
+        </div>
+        <button onclick="loginStudent()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/30">
+          Sign In as Student
+        </button>
+        <p class="text-[11px] text-center text-slate-500">Demo Student — Name: <b>Murad</b>, Last: <b>Shahmardanov</b>, PIN: <b>6675</b></p>
+      </div>
+
+      <!-- TEACHER LOGIN FORM -->
+      <div id="teacherLoginForm" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Instructor Username</label>
+          <input type="text" id="loginTeacherUser" placeholder="admin" class="w-full bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl focus:outline-none focus:border-blue-500 text-sm font-mono">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Password</label>
+          <input type="password" id="loginTeacherPass" placeholder="••••••••" class="w-full bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl focus:outline-none focus:border-blue-500 text-sm font-mono">
+        </div>
+        <button onclick="loginTeacher()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-600/30">
+          Access Instructor Console
+        </button>
+        <p class="text-[11px] text-center text-slate-500">Default Credentials — Username: <b>admin</b>, Password: <b>admin</b></p>
+      </div>
+    </section>
+
+    <!-- 2. STUDENT DASHBOARD & ANALYTICS -->
+    <section id="studentDashboard" class="hidden space-y-6">
+      <div class="flex justify-between items-center bg-slate-800/40 backdrop-blur-md p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+        <div>
+          <h2 id="studentWelcomeTitle" class="text-xl font-extrabold text-white">Student Portal</h2>
+          <p id="studentTrackInfo" class="text-xs text-blue-400 mt-0.5 font-semibold">Track: --</p>
+        </div>
+        <button onclick="logout()" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl border border-slate-700/80 transition">Sign Out</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-800/40 backdrop-blur-xl p-5 rounded-2xl border border-slate-700/50 shadow-lg">
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Total Exams Taken</span>
+          <h4 id="statTotalExams" class="text-2xl font-black text-white mt-1">0</h4>
+        </div>
+        <div class="bg-slate-800/40 backdrop-blur-xl p-5 rounded-2xl border border-slate-700/50 shadow-lg">
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Average Accuracy</span>
+          <h4 id="statAvgAccuracy" class="text-2xl font-black text-emerald-400 mt-1">0%</h4>
+        </div>
+        <div class="bg-slate-800/40 backdrop-blur-xl p-5 rounded-2xl border border-slate-700/50 shadow-lg">
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Security Rating</span>
+          <h4 id="statSecurityRating" class="text-2xl font-black text-blue-400 mt-1">100% Clean</h4>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">📝 Assigned Exam Modules</h3>
+        <div id="testList" class="space-y-3"></div>
+      </div>
+
+      <div class="bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 shadow-xl space-y-4 mt-6">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">📈 Performance & Exam History</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-700/80">
+              <tr>
+                <th class="p-3.5 rounded-l-xl">Timestamp</th>
+                <th class="p-3.5">Exam Title</th>
+                <th class="p-3.5">Score</th>
+                <th class="p-3.5 rounded-r-xl">Integrity Status</th>
+              </tr>
+            </thead>
+            <tbody id="studentHistoryBody" class="divide-y divide-slate-700/40"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. EXAM SECURE SCREEN (WIDE SPLIT LAYOUT: LEFT GIANT QUESTION, RIGHT ANSWERS) -->
+    <section id="examScreen" class="hidden space-y-6">
+      <div class="bg-slate-800/40 backdrop-blur-md p-5 rounded-2xl flex justify-between items-center border border-slate-700/50 shadow-xl">
+        <div>
+          <h3 id="currentTestTitle" class="text-base font-bold text-blue-400">Exam Module</h3>
+          <span id="examDurationText" class="text-xs text-slate-400">Time Limit</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="desmosBtn" onclick="toggleDesmos()" class="hidden bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 px-4 py-2 rounded-xl text-xs font-bold transition items-center gap-1.5 shadow">
+            🧮 Desmos Calculator
+          </button>
+          <span id="examTimer" class="bg-slate-900/90 border border-slate-700/80 px-4 py-2 rounded-xl text-sm font-mono text-amber-400 font-bold shadow-inner">⏱️ --:--</span>
+          <span id="cheatCounter" class="bg-red-500/10 text-red-400 border border-red-500/20 text-xs px-3 py-2 rounded-xl font-bold">
+            Violations: 0
+          </span>
+        </div>
+      </div>
+
+      <!-- ШИРОКОЕ РАЗДЕЛЕНИЕ: СЛЕВА ОГРОМНОЕ ФОТО ВОПРОСА, СПРАВА ОТВЕТЫ -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- ЛЕВАЯ КОЛОНКА (7 колонок из 12): МАКСИМАЛЬНО ПРОСТОРНОЕ ФОТО ВОПРОСА -->
+        <div id="leftQuestionCol" class="lg:col-span-7 bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 space-y-4 shadow-2xl min-h-[600px] flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center border-b border-slate-700/50 pb-3 mb-4">
+              <h4 id="questionCounterText" class="text-xs font-bold uppercase tracking-wider text-slate-400">Question 1 of 1</h4>
+            </div>
+            <!-- ОГРОМНЫЙ КОНТЕЙНЕР ДЛЯ ФОТО БЕЗ ЛИШНИХ НАДПИСЕЙ -->
+            <div id="questionImageWrapper" class="w-full flex items-center justify-center bg-slate-950/80 border border-slate-700/80 rounded-2xl p-4 shadow-inner min-h-[480px]"></div>
+          </div>
+          <div class="text-[11px] text-slate-500 italic pt-3 border-t border-slate-700/40 text-center">
+            Ischool.Prep Secure High-Resolution Bluebook View
+          </div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА (5 колонок из 12): ВАРИАНТЫ ИЛИ ОТКРЫТЫЙ ОТВЕТ -->
+        <div id="rightAnswerCol" class="lg:col-span-5 bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 space-y-6 shadow-2xl min-h-[600px] flex flex-col justify-between">
+          <div class="space-y-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-700/50 pb-3">Select Your Answer</h4>
+            <div id="answersContainer" class="space-y-3"></div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-700/40 flex justify-end">
+            <button onclick="nextQuestion()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-600/30 transition-all transform active:scale-[0.98] text-base">
+              Next Question →
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. INSTRUCTOR DASHBOARD -->
+    <section id="teacherDashboard" class="hidden space-y-8">
+      <div class="flex justify-between items-center bg-slate-800/40 backdrop-blur-md p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+        <div>
+          <h2 class="text-xl font-extrabold text-blue-400">Instructor Command Center</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Manage students, section tracks, AI vision tests, and live security audits</p>
+        </div>
+        <button onclick="logout()" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl border border-slate-700/80 transition">Sign Out</button>
+      </div>
+
+      <!-- STUDENT REGISTRATION & TRACKS -->
+      <div class="bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 shadow-xl space-y-4">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">👤 Register Student & Academic Track</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <input type="text" id="newStudentFirst" placeholder="First Name (e.g. Murad)" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+          <input type="text" id="newStudentLast" placeholder="Last Name" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+          <input type="text" id="newStudentPin" placeholder="Security PIN (6675)" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-mono">
+          <select id="newStudentTrack" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+            <option value="math">🧮 Math Track Only</option>
+            <option value="verbal">📚 Verbal Track Only</option>
+            <option value="both">⚡ Full Track (Both)</option>
+          </select>
+        </div>
+        <button onclick="saveStudent()" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 font-semibold px-5 py-2.5 rounded-xl text-xs transition">
+          + Register Student to Database
+        </button>
+        
+        <div class="pt-3 border-t border-slate-700/50">
+          <p class="text-[11px] text-slate-400 mb-2 font-medium">Registered Students & Assigned Tracks:</p>
+          <div id="studentsListDisplay" class="flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+
+      <!-- AI VISION TEST PUBLISHER -->
+      <div class="bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 shadow-xl space-y-4">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">🤖 AI Vision: Publish Exam via Screenshot</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input type="text" id="newTestTitle" placeholder="Exam Title (e.g. SAT Math Module 1)" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+          <input type="number" id="newTestDuration" placeholder="Time Limit (Minutes)" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+          <select id="newTestSection" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+            <option value="math">🧮 Section: Math</option>
+            <option value="verbal">📚 Section: Verbal</option>
+          </select>
+        </div>
+
+        <div class="p-5 bg-slate-900/60 rounded-2xl border border-slate-800 space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-2">📸 Upload Question Screenshot / Image:</label>
+            <input type="file" id="qImageFile" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+          </div>
+
+          <div id="imagePreviewContainer" class="hidden text-center">
+            <img id="imagePreview" src="" class="max-h-48 mx-auto rounded-xl border border-slate-700 shadow-md" alt="Question Preview">
+            <p class="text-[10px] text-emerald-400 mt-1 font-semibold">✓ Image successfully attached to exam question</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Answer Input Format:</label>
+            <select id="qType" onchange="toggleQuestionType()" class="w-full bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+              <option value="mcq">Multiple Choice (4 Options: A, B, C, D)</option>
+              <option value="open">Student-Produced Response (Open Number/Fraction)</option>
+            </select>
+          </div>
+
+          <div id="mcqOptionsArea" class="space-y-2">
+            <input type="text" id="qA" placeholder="Option A" class="w-full bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-xl text-sm">
+            <input type="text" id="qB" placeholder="Option B" class="w-full bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-xl text-sm">
+            <input type="text" id="qC" placeholder="Option C" class="w-full bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-xl text-sm">
+            <input type="text" id="qD" placeholder="Option D" class="w-full bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-xl text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Correct Answer Key:</label>
+            <input type="text" id="qCorrect" placeholder="e.g. A or 12.5" class="w-full bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-mono">
+          </div>
+        </div>
+
+        <button onclick="saveTest()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-emerald-600/20 transition-all">
+          Publish Exam Module to Student Feed
+        </button>
+      </div>
+
+      <!-- LIVE RESULTS & AUDIT TABLE -->
+      <div class="bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 shadow-xl">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">📊 Live Results & Security Audits</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-700/80">
+              <tr>
+                <th class="p-3.5 rounded-l-xl">Student Name</th>
+                <th class="p-3.5">Exam Title</th>
+                <th class="p-3.5">Final Score</th>
+                <th class="p-3.5 rounded-r-xl">Security Violations</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody" class="divide-y divide-slate-700/40"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    let currentUser = null;
+    let currentStudentPin = null;
+    let currentStudentTrack = null;
+    let isTeacher = false;
+    let cheatCount = 0;
+    let currentTest = null;
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+    let timerInterval = null;
+    let timeLeftSeconds = 0;
+    let desmosCalculator = null;
+    let isDesmosOpen = false;
+    let uploadedImageBase64 = "";
+
+    let students = [
+      { pin: "6675", firstName: "Murad", lastName: "Shahmardanov", track: "both" }
+    ];
+
+    let tests = [
+      {
+        id: 1,
+        title: "Ischool.Prep — SAT Math Baseline",
+        duration: 35,
+        section: "math",
+        questions: [
+          { 
+            imageUrl: "",
+            type: "mcq",
+            options: ["A) 5", "B) 3", "C) 15", "D) 2"], 
+            correct: "A" 
+          }
+        ]
+      }
+    ];
+
+    let results = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const elt = document.getElementById('calculator');
+      desmosCalculator = Desmos.GraphingCalculator(elt, { expressions: true, settingsMenu: true });
+    });
+
+    function toggleDesmos() {
+      const sidebar = document.getElementById('desmosSidebar');
+      const main = document.getElementById('mainContainer');
+      isDesmosOpen = !isDesmosOpen;
+
+      if (isDesmosOpen) {
+        sidebar.classList.remove('hidden');
+        main.classList.remove('max-w-6xl');
+        main.classList.add('max-w-6xl', 'ml-[50%]');
+        if (desmosCalculator) desmosCalculator.resize();
+      } else {
+        sidebar.classList.add('hidden');
+        main.classList.remove('ml-[50%]');
+      }
+    }
+
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedImageBase64 = e.target.result;
+          document.getElementById('imagePreview').src = uploadedImageBase64;
+          document.getElementById('imagePreviewContainer').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function switchLoginTab(role) {
+      const tabStudent = document.getElementById('tabStudent');
+      const tabTeacher = document.getElementById('tabTeacher');
+      const studentForm = document.getElementById('studentLoginForm');
+      const teacherForm = document.getElementById('teacherLoginForm');
+
+      if (role === 'student') {
+        tabStudent.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow";
+        tabTeacher.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white";
+        studentForm.classList.remove('hidden');
+        teacherForm.classList.add('hidden');
+      } else {
+        tabTeacher.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow";
+        tabStudent.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white";
+        teacherForm.classList.remove('hidden');
+        studentForm.classList.add('hidden');
+      }
+    }
+
+    function toggleQuestionType() {
+      const type = document.getElementById('qType').value;
+      const area = document.getElementById('mcqOptionsArea');
+      if (type === 'open') {
+        area.classList.add('hidden');
+      } else {
+        area.classList.remove('hidden');
+      }
+    }
+
+    function loginStudent() {
+      const fName = document.getElementById('loginFirstName').value.trim();
+      const lName = document.getElementById('loginLastName').value.trim();
+      const pin = document.getElementById('loginStudentPin').value.trim();
+
+      if (!fName || !lName || !pin) {
+        return alert("Please enter First Name, Last Name, and PIN!");
+      }
+
+      const foundStudent = students.find(s => s.pin === pin && s.firstName.toLowerCase() === fName.toLowerCase() && s.lastName.toLowerCase() === lName.toLowerCase());
+      
+      if (!foundStudent) {
+        return alert("Invalid credentials or security PIN!");
+      }
+
+      isTeacher = false;
+      currentStudentPin = pin;
+      currentStudentTrack = foundStudent.track;
+      currentUser = foundStudent.firstName + " " + foundStudent.lastName;
+      
+      let trackText = "Full Track (Math & Verbal)";
+      if (currentStudentTrack === 'math') trackText = "Math Track Only";
+      if (currentStudentTrack === 'verbal') trackText = "Verbal Track Only";
+
+      document.getElementById('studentWelcomeTitle').innerText = `Student Portal: ${currentUser}`;
+      document.getElementById('studentTrackInfo').innerText = `Assigned Track: ${trackText}`;
+      
+      showSection('studentDashboard');
+      renderStudentTests();
+      renderStudentHistory();
+      updateStudentAnalytics();
+
+      document.getElementById('userInfo').innerText = currentUser;
+      document.getElementById('loginScreen').classList.add('hidden');
+    }
+
+    function loginTeacher() {
+      const user = document.getElementById('loginTeacherUser').value.trim();
+      const pass = document.getElementById('loginTeacherPass').value.trim();
+
+      if (user === "admin" && pass === "admin") {
+        isTeacher = true;
+        currentUser = "Instructor";
+        showSection('teacherDashboard');
+        renderTeacherResults();
+        renderStudentsList();
+
+        document.getElementById('userInfo').innerText = currentUser;
+        document.getElementById('loginScreen').classList.add('hidden');
+      } else {
+        alert("Invalid administrator credentials!");
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      currentStudentPin = null;
+      currentStudentTrack = null;
+      document.getElementById('userInfo').innerText = "Not Authenticated";
+      document.getElementById('loginFirstName').value = "";
+      document.getElementById('loginLastName').value = "";
+      document.getElementById('loginStudentPin').value = "";
+      document.getElementById('loginTeacherUser').value = "";
+      document.getElementById('loginTeacherPass').value = "";
+      
+      if (isDesmosOpen) toggleDesmos();
+
+      showSection('loginScreen');
+    }
+
+    function showSection(id) {
+      document.getElementById('studentDashboard').classList.add('hidden');
+      document.getElementById('teacherDashboard').classList.add('hidden');
+      document.getElementById('examScreen').classList.add('hidden');
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function saveStudent() {
+      const fName = document.getElementById('newStudentFirst').value.trim();
+      const lName = document.getElementById('newStudentLast').value.trim();
+      const pin = document.getElementById('newStudentPin').value.trim();
+      const track = document.getElementById('newStudentTrack').value;
+
+      if (!fName || !lName || !pin) return alert("Please fill all student fields!");
+      if (students.some(s => s.pin === pin)) return alert("This PIN code is already taken!");
+
+      students.push({ pin, firstName: fName, lastName: lName, track });
+      alert(`Student ${fName} ${lName} registered successfully with track: ${track.toUpperCase()}!`);
+      
+      document.getElementById('newStudentFirst').value = "";
+      document.getElementById('newStudentLast').value = "";
+      document.getElementById('newStudentPin').value = "";
+      renderStudentsList();
+    }
+
+    function renderStudentsList() {
+      const display = document.getElementById('studentsListDisplay');
+      display.innerHTML = students.map(s => `
+        <span class="bg-slate-900 border border-slate-700/80 text-xs px-3 py-1.5 rounded-xl text-slate-300">
+          <b>${s.firstName} ${s.lastName}</b> (${s.track.toUpperCase()}): <span class="text-blue-400 font-mono">${s.pin}</span>
+        </span>
+      `).join('');
+    }
+
+    function renderStudentTests() {
+      const list = document.getElementById('testList');
+      const availableTests = tests.filter(t => {
+        if (currentStudentTrack === 'both') return true;
+        return t.section === currentStudentTrack;
+      });
+
+      if (availableTests.length === 0) {
+        list.innerHTML = `<div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50 text-center text-slate-400 text-xs">No exam modules available for your track (${currentStudentTrack.toUpperCase()}).</div>`;
+        return;
+      }
+
+      list.innerHTML = availableTests.map(t => `
+        <div class="bg-slate-800/40 backdrop-blur-md p-5 rounded-2xl border border-slate-700/50 flex justify-between items-center shadow-xl hover:border-slate-600/60 transition">
+          <div>
+            <div class="flex items-center gap-2">
+              <h4 class="font-bold text-base text-white">${t.title}</h4>
+              <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${t.section === 'math' ? 'bg-blue-600/30 text-blue-300 border border-blue-500/30' : 'bg-purple-600/30 text-purple-300 border border-purple-500/30'}">${t.section}</span>
+            </div>
+            <span class="text-xs text-amber-400 mt-1 inline-block font-medium">⏱️ Time Limit: ${t.duration} mins</span>
+          </div>
+          <button onclick="startExam(${t.id})" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2 rounded-xl shadow-lg shadow-blue-600/30 transition">
+            Start Exam
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function updateStudentAnalytics() {
+      const myResults = results.filter(r => r.studentPin === currentStudentPin);
+      document.getElementById('statTotalExams').innerText = myResults.length;
+      
+      if (myResults.length > 0) {
+        let totalCorrectPercentage = 0;
+        let totalViolations = 0;
+        myResults.forEach(r => {
+          const parts = r.score.split(" из ");
+          if(parts.length === 2) {
+            totalCorrectPercentage += (parseInt(parts[0]) / parseInt(parts[1])) * 100;
+          }
+          totalViolations += r.cheats;
+        });
+        const avg = Math.round(totalCorrectPercentage / myResults.length);
+        document.getElementById('statAvgAccuracy').innerText = `${avg}%`;
+        document.getElementById('statSecurityRating').innerText = totalViolations === 0 ? "100% Clean" : `${totalViolations} Warnings`;
+      } else {
+        document.getElementById('statAvgAccuracy').innerText = "0%";
+        document.getElementById('statSecurityRating').innerText = "100% Clean";
+      }
+    }
+
+    function renderStudentHistory() {
+      const body = document.getElementById('studentHistoryBody');
+      const myResults = results.filter(r => r.studentPin === currentStudentPin);
+
+      if (myResults.length === 0) {
+        body.innerHTML = `<tr><td colspan="4" class="p-4 text-slate-500 text-center text-xs">No exam attempts recorded yet.</td></tr>`;
+        return;
+      }
+
+      body.innerHTML = myResults.map(r => `
+        <tr class="hover:bg-slate-800/30 transition">
+          <td class="p-3.5 text-xs text-slate-400 font-mono">${r.date}</td>
+          <td class="p-3.5 text-white font-medium">${r.testTitle}</td>
+          <td class="p-3.5 text-emerald-400 font-bold">${r.score}</td>
+          <td class="p-3.5 ${r.cheats > 0 ? 'text-red-400 font-bold' : 'text-slate-400'}">
+            ${r.cheats > 0 ? `⚠️ ${r.cheats} warnings` : '0 (Clean)'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function startExam(testId) {
+      currentTest = tests.find(t => t.id === testId);
+
+      const desmosBtn = document.getElementById('desmosBtn');
+      if (currentTest.section === 'math') {
+        desmosBtn.classList.remove('hidden');
+        desmosBtn.classList.add('flex');
+      } else {
+        desmosBtn.classList.add('hidden');
+        desmosBtn.classList.remove('flex');
+      }
+
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(()=>{});
+      }
+
+      cheatCount = 0;
+      currentQuestionIndex = 0;
+      userAnswers = [];
+      updateCheatCounter();
+      showSection('examScreen');
+      document.getElementById('currentTestTitle').innerText = currentTest.title;
+      document.getElementById('examDurationText').innerText = `Limit: ${currentTest.duration} mins`;
+      
+      renderQuestion();
+      startCountdown(currentTest.duration);
+    }
+
+    function startCountdown(durationMinutes) {
+      if (timerInterval) clearInterval(timerInterval);
+      timeLeftSeconds = durationMinutes * 60;
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        timeLeftSeconds--;
+        updateTimerDisplay();
+
+        if (timeLeftSeconds <= 0) {
+          clearInterval(timerInterval);
+          alert("Time is up! Exam submitted automatically.");
+          finishExam(true);
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(timeLeftSeconds / 60);
+      const s = timeLeftSeconds % 60;
+      document.getElementById('examTimer').innerText = `⏱️ ${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    // ОТРИСОВКА ВОПРОСА СЛЕДУЮЩЕГО УРОВНЯ (ФОТО ВО ВСЮ ШИРИНУ БЕЗ ЛИШНИХ ТЕКСТОВ)
+    function renderQuestion() {
+      const q = currentTest.questions[currentQuestionIndex];
+      
+      document.getElementById('questionCounterText').innerText = `Question ${currentQuestionIndex + 1} of ${currentTest.questions.length}`;
+
+      const imgWrapper = document.getElementById('questionImageWrapper');
+      if (q.imageUrl) {
+        imgWrapper.innerHTML = `<img src="${q.imageUrl}" class="w-full h-auto max-h-[550px] object-contain rounded-xl shadow-2xl bg-black/40" alt="Exam Question Graphic">`;
+      } else {
+        imgWrapper.innerHTML = `<div class="text-slate-500 italic text-sm">No image provided for this question</div>`;
+      }
+
+      const answersContainer = document.getElementById('answersContainer');
+      if (q.type === 'mcq') {
+        answersContainer.innerHTML = q.options.map((opt) => `
+          <label class="block bg-slate-900/80 border border-slate-700/80 p-4 rounded-2xl cursor-pointer hover:border-blue-500/80 transition shadow-inner">
+            <input type="radio" name="opt" value="${opt[0]}" class="mr-3 accent-blue-500"> ${opt}
+          </label>
+        `).join('');
+      } else {
+        answersContainer.innerHTML = `
+          <div class="space-y-3 pt-6">
+            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Student-Produced Response (Enter Answer):</label>
+            <input type="text" id="openAnswerInput" placeholder="e.g. 12.5 or 3/4" class="w-full bg-slate-900/90 border border-slate-700/80 p-4 rounded-xl text-xl font-mono text-center focus:outline-none focus:border-blue-500 text-white tracking-widest shadow-inner">
+          </div>
+        `;
+      }
+    }
+
+    function nextQuestion() {
+      const q = currentTest.questions[currentQuestionIndex];
+      
+      if (q.type === 'mcq') {
+        const selected = document.querySelector('input[name="opt"]:checked');
+        userAnswers.push(selected ? selected.value : null);
+      } else {
+        const val = document.getElementById('openAnswerInput').value.trim();
+        userAnswers.push(val ? val : null);
+      }
+
+      currentQuestionIndex++;
+      if (currentQuestionIndex < currentTest.questions.length) {
+        renderQuestion();
+      } else {
+        finishExam(false);
+      }
+    }
+
+    function finishExam(isAutoSubmit) {
+      if (timerInterval) clearInterval(timerInterval);
+      if (isDesmosOpen) toggleDesmos();
+
+      let correctCount = 0;
+      let reviewHtml = "";
+
+      currentTest.questions.forEach((q, i) => {
+        const userAns = userAnswers[i] ? userAnswers[i].toString().trim().toUpperCase() : "NO ANSWER";
+        const correctAns = q.correct.toString().trim().toUpperCase();
+        const isCorrect = (userAns === correctAns);
+
+        if (isCorrect) correctCount++;
+
+        reviewHtml += `
+          <div class="bg-slate-800/80 border ${isCorrect ? 'border-emerald-500/40' : 'border-red-500/40'} p-4 rounded-2xl space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-slate-400">Question ${i + 1}</span>
+              <span class="text-xs px-2.5 py-1 rounded-lg font-bold ${isCorrect ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
+                ${isCorrect ? '✓ Correct' : '✕ Incorrect'}
+              </span>
+            </div>
+            ${q.imageUrl ? `<img src="${q.imageUrl}" class="max-h-48 rounded-xl my-2 mx-auto bg-black/40 object-contain" alt="Task graphic">` : ''}
+            <div class="text-xs space-y-1 pt-1 border-t border-slate-700/60 font-mono">
+              <p class="text-slate-300">Your Answer: <span class="${isCorrect ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}">${userAnswers[i] || 'Skipped'}</span></p>
+              ${!isCorrect ? `<p class="text-emerald-400">Correct Answer: <span class="font-bold">${q.correct}</span></p>` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      const total = currentTest.questions.length;
+      const percentage = (correctCount / total) * 100;
+
+      let badge = "🏆";
+      let title = "Outstanding! Perfect Execution!";
+      if (percentage < 50) {
+        badge = "💪";
+        title = "Keep Practicing, Tiger!";
+      } else if (percentage < 80) {
+        badge = "🔥";
+        title = "Great Job, Solid Score!";
+      }
+
+      document.getElementById('resultBadge').innerText = badge;
+      document.getElementById('resultTitle').innerText = title;
+      document.getElementById('resScore').innerText = `${correctCount} из ${total}`;
+      document.getElementById('resCheats').innerText = cheatCount;
+      document.getElementById('reviewContainer').innerHTML = reviewHtml;
+      document.getElementById('resultModal').classList.remove('hidden');
+
+      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " " + new Date().toLocaleDateString();
+
+      results.push({
+        student: currentUser,
+        studentPin: currentStudentPin,
+        testTitle: currentTest.title,
+        score: `${correctCount} из ${total}`,
+        cheats: cheatCount,
+        date: nowStr
+      });
+
+      if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+    }
+
+    function closeResultModal() {
+      document.getElementById('resultModal').classList.add('hidden');
+      showSection('studentDashboard');
+      renderStudentTests();
+      renderStudentHistory();
+      updateStudentAnalytics();
+    }
+
+    function registerCheat() {
+      if (!document.getElementById('examScreen').classList.contains('hidden')) {
+        cheatCount++;
+        updateCheatCounter();
+        const warn = document.getElementById('cheatWarning');
+        warn.classList.remove('hidden');
+        setTimeout(() => warn.classList.add('hidden'), 4000);
+      }
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) registerCheat();
+    });
+    window.addEventListener("blur", () => registerCheat());
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") registerCheat();
+    });
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement) registerCheat();
+    });
+
+    function updateCheatCounter() {
+      document.getElementById('cheatCounter').innerText = `Violations: ${cheatCount}`;
+    }
+
+    function saveTest() {
+      const title = document.getElementById('newTestTitle').value.trim();
+      const duration = parseInt(document.getElementById('newTestDuration').value);
+      const section = document.getElementById('newTestSection').value;
+      const qType = document.getElementById('qType').value;
+      const qCorrect = document.getElementById('qCorrect').value.trim();
+
+      if (!title || !duration || !qCorrect) {
+        return alert("Please fill in exam title, time limit, and correct answer!");
+      }
+
+      if (!uploadedImageBase64) {
+        return alert("Please upload a question screenshot/image!");
+      }
+
+      let options = [];
+      if (qType === 'mcq') {
+        const qA = document.getElementById('qA').value.trim();
+        const qB = document.getElementById('qB').value.trim();
+        const qC = document.getElementById('qC').value.trim();
+        const qD = document.getElementById('qD').value.trim();
+        options = [`A) ${qA}`, `B) ${qB}`, `C) ${qC}`, `D) ${qD}`];
+      }
+
+      tests.push({
+        id: Date.now(),
+        title: title,
+        duration: duration,
+        section: section,
+        questions: [
+          {
+            imageUrl: uploadedImageBase64,
+            type: qType,
+            options: options,
+            correct: qCorrect
+          }
+        ]
+      });
+
+      alert(`Exam module for section [${section.toUpperCase()}] published successfully!`);
+      document.getElementById('newTestTitle').value = "";
+      document.getElementById('newTestDuration').value = "";
+      document.getElementById('qCorrect').value = "";
+      document.getElementById('qImageFile').value = "";
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      uploadedImageBase64 = "";
+    }
+
+    function renderTeacherResults() {
+      const body = document.getElementById('resultsTableBody');
+      if (results.length === 0) {
+        body.innerHTML = `<tr><td colspan="4" class="p-4 text-slate-500 text-center">No student exam attempts recorded yet.</td></tr>`;
+        return;
+      }
+      body.innerHTML = results.map(r => `
+        <tr class="hover:bg-slate-800/30 transition">
+          <td class="p-3.5 font-bold text-white">${r.student}</td>
+          <td class="p-3.5 text-slate-300">${r.testTitle}</td>
+          <td class="p-3.5 text-emerald-400 font-bold">${r.score}</td>
+          <td class="p-3.5 ${r.cheats > 0 ? 'text-red-400 font-bold' : 'text-slate-400'}">
+            ${r.cheats > 0 ? `⚠️ ${r.cheats} warnings` : '0 (Clean)'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    document.addEventListener("contextmenu", e => e.preventDefault());
+  </script>
+</body>
+</html>
