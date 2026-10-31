@@ -3,236 +3,357 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ischool.Prep — Next-Gen Exam Suite</title>
+  <title>iSchool.Prep — Enterprise Elite v13.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Последняя версия Desmos Calculator API v1.11 -->
+  <!-- Official Desmos Calculator API v1.11 -->
   <script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
   <style>
     body { 
       user-select: none; 
-      background: radial-gradient(circle at top right, #1e1b4b, #0f172a, #020617);
+      background: radial-gradient(circle at 50% 0%, #0f172a 0%, #090d16 50%, #02040a 100%);
       min-height: 100vh;
     }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.8); }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+    .neon-glow {
+      box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.35);
+    }
+    .neon-glow-indigo {
+      box-shadow: 0 0 50px -10px rgba(99, 102, 241, 0.35);
+    }
+    .card-hover {
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.3);
+    }
   </style>
 </head>
-<body class="text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white">
+<body class="text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white pb-16">
 
   <!-- HEADER NAVIGATION -->
-  <header class="backdrop-blur-md bg-slate-900/80 border-b border-slate-800/80 sticky top-0 z-40 px-6 py-4 flex justify-between items-center shadow-2xl">
+  <header class="backdrop-blur-2xl bg-slate-950/80 border-b border-blue-500/20 sticky top-0 z-40 px-8 py-4 flex justify-between items-center shadow-2xl">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30 text-white font-black text-lg">
+      <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/40 text-white font-black text-2xl tracking-tighter">
         i
       </div>
       <div>
         <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
-          Ischool.<span class="text-blue-400">Prep</span>
+          iSchool.<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Prep</span> 
+          <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono font-semibold">ELITE v13.0</span>
         </h1>
-        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Next-Gen Secure Exam Engine</p>
+        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Ultimate Academic Intelligence Network</p>
       </div>
     </div>
-    <div id="userInfo" class="text-xs font-medium bg-slate-800/80 border border-slate-700/50 px-4 py-2 rounded-full text-slate-300 shadow-inner">
-      Not Authenticated
+    <div class="flex items-center gap-4">
+      <div id="pomodoroWidget" class="hidden md:flex items-center gap-3 bg-slate-900/90 border border-slate-700/80 px-4 py-2 rounded-full text-xs font-mono text-amber-400 shadow-inner">
+        <span>🍅 <span id="pomoTimer" class="font-bold">25:00</span></span>
+        <button onclick="togglePomodoro()" id="pomoBtn" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/40 px-2.5 py-1 rounded-lg text-amber-300 font-sans transition">Start</button>
+      </div>
+      <div id="userInfo" class="text-xs font-semibold bg-slate-900/90 border border-blue-500/30 px-5 py-2.5 rounded-full text-slate-200 shadow-inner flex items-center gap-2.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> Not Authenticated
+      </div>
     </div>
   </header>
 
-  <!-- SECURITY WARNING TOAST -->
-  <div id="cheatWarning" class="hidden fixed top-6 right-6 bg-red-500/95 backdrop-blur-md border border-red-400/50 text-white px-5 py-4 rounded-2xl shadow-2xl z-50 animate-bounce flex items-center gap-3">
-    <span class="text-xl">⚠️</span>
-    <div>
-      <h5 class="font-bold text-sm">Security Alert!</h5>
-      <p class="text-xs text-red-100">Tab switch, focus loss, or ESC key detected. Instructor notified.</p>
-    </div>
-  </div>
-
   <!-- EXAM RESULT & REVIEW MODAL -->
-  <div id="resultModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700/80 p-8 rounded-3xl max-w-2xl w-full text-center space-y-5 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col">
-      <div id="resultBadge" class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center text-3xl shadow-lg">🏆</div>
+  <div id="resultModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+    <div class="glass-card p-8 rounded-[2.5xl] max-w-4xl w-full text-center space-y-6 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col neon-glow">
+      <div id="resultBadge" class="w-20 h-20 mx-auto rounded-3xl flex items-center justify-center text-4xl shadow-xl bg-gradient-to-tr from-blue-600/20 to-indigo-600/20 border border-blue-500/40">🏆</div>
       <div>
-        <h3 id="resultTitle" class="text-2xl font-extrabold text-white">Exam Completed Successfully!</h3>
-        <p id="resultSubtitle" class="text-xs text-slate-400 mt-1">Your performance report has been securely logged.</p>
+        <h3 id="resultTitle" class="text-3xl font-black text-white tracking-tight">Mission Accomplished!</h3>
+        <p id="resultSubtitle" class="text-xs text-slate-400 mt-1.5">Mistakes have been securely dispatched to your Personal Error Notebook.</p>
       </div>
       
-      <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-2xl flex justify-around items-center">
+      <div class="bg-slate-950/60 border border-slate-800 p-5 rounded-2xl flex justify-center items-center shadow-inner">
         <div>
-          <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Score</span>
-          <span id="resScore" class="text-xl font-black text-blue-400">0 / 0</span>
-        </div>
-        <div class="h-8 w-px bg-slate-700"></div>
-        <div>
-          <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Violations</span>
-          <span id="resCheats" class="text-xl font-black text-red-400">0</span>
+          <span class="text-[10px] text-slate-400 uppercase tracking-widest block font-bold">Final Exam Score</span>
+          <span id="resScore" class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">0 / 0</span>
         </div>
       </div>
 
-      <div class="text-left overflow-y-auto space-y-3 pr-2 flex-1" id="reviewContainer">
-        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Detailed Answer Review:</h4>
-      </div>
+      <div class="text-left overflow-y-auto space-y-4 pr-2 flex-1 custom-scrollbar" id="reviewContainer"></div>
 
-      <button onclick="closeResultModal()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/30 shrink-0">
+      <button onclick="playClickSound(); closeResultModal();" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 rounded-2xl transition shadow-xl shadow-blue-600/30 shrink-0 text-sm tracking-wide">
         Return to Student Dashboard
       </button>
     </div>
   </div>
 
-  <!-- LATEST DESMOS SIDEBAR (LEFT SCREEN) -->
-  <div id="desmosSidebar" class="hidden fixed left-0 top-[73px] bottom-0 w-1/2 bg-slate-900 border-r border-slate-700/80 z-30 flex flex-col shadow-2xl backdrop-blur-xl">
-    <div class="p-3 bg-slate-800/90 border-b border-slate-700/80 flex justify-between items-center">
-      <h3 class="text-xs font-bold text-blue-400 flex items-center gap-2">🧮 Desmos Graphing Calculator (v1.11)</h3>
-      <button onclick="toggleDesmos()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1 rounded-lg text-xs font-bold transition">✕ Close</button>
+  <!-- INSTRUCTOR & TUTOR MODALS -->
+  <div id="diagModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+    <div class="glass-card p-8 rounded-[2.5xl] max-w-5xl w-full space-y-6 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col neon-glow">
+      <div class="flex justify-between items-center border-b border-slate-800/80 pb-4">
+        <div>
+          <h3 id="diagStudentName" class="text-2xl font-black text-white">Student Diagnostics</h3>
+          <p id="diagTestTitle" class="text-xs text-blue-400 font-semibold mt-0.5">Exam Module</p>
+        </div>
+        <button onclick="playClickSound(); closeDiagModal();" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">✕ Close</button>
+      </div>
+      <div class="text-left overflow-y-auto space-y-4 pr-2 flex-1 custom-scrollbar" id="diagContainer"></div>
+    </div>
+  </div>
+
+  <!-- SMART TUTOR MODAL -->
+  <div id="aiModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+    <div class="glass-card p-8 rounded-[2.5xl] max-w-xl w-full space-y-5 shadow-2xl relative neon-glow-indigo">
+      <div class="flex justify-between items-center border-b border-slate-800/80 pb-3">
+        <h3 class="text-base font-extrabold text-indigo-400 flex items-center gap-2">💡 iSchool Smart Academic Tutor</h3>
+        <button onclick="playClickSound(); closeAiModal();" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl text-xs font-bold transition">✕</button>
+      </div>
+      <div id="aiExplanationContent" class="text-sm text-slate-200 bg-slate-950/80 p-5 rounded-2xl border border-slate-800/80 space-y-3 leading-relaxed shadow-inner">
+        Generating step-by-step logic breakdown...
+      </div>
+      <button onclick="playClickSound(); closeAiModal();" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg shadow-indigo-600/30">Got It, Thanks!</button>
+    </div>
+  </div>
+
+  <!-- SCRATCHPAD MODAL -->
+  <div id="scratchpadModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+    <div class="glass-card p-6 rounded-[2.5xl] max-w-xl w-full space-y-4 shadow-2xl relative">
+      <div class="flex justify-between items-center border-b border-slate-800/80 pb-3">
+        <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2">📝 Digital Scratchpad & Quick Notes</h3>
+        <button onclick="toggleScratchpad()" class="bg-slate-800/80 text-slate-300 px-3 py-1 rounded-xl text-xs">✕ Close</button>
+      </div>
+      <textarea placeholder="Write down formulas, calculations or thoughts here during the exam..." class="w-full h-64 bg-slate-950/80 border border-slate-800/80 p-4 rounded-2xl text-sm text-slate-200 focus:outline-none focus:border-blue-500 font-mono resize-none shadow-inner"></textarea>
+    </div>
+  </div>
+
+  <!-- DESMOS SIDEBAR -->
+  <div id="desmosSidebar" class="hidden fixed left-0 top-[77px] bottom-0 w-1/2 bg-slate-900/95 border-r border-blue-500/30 z-30 flex flex-col shadow-2xl backdrop-blur-2xl">
+    <div class="p-3.5 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
+      <h3 class="text-xs font-bold text-blue-400 flex items-center gap-2">🧮 Official Desmos Graphing Calculator (v1.11)</h3>
+      <button onclick="playClickSound(); toggleDesmos();" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-xl text-xs font-bold transition">✕ Close</button>
     </div>
     <div id="calculator" class="w-full flex-1"></div>
   </div>
 
   <!-- MAIN CONTAINER -->
-  <main id="mainContainer" class="max-w-6xl mx-auto p-6 mt-4 transition-all duration-300">
+  <main id="mainContainer" class="max-w-6xl mx-auto p-6 mt-6 transition-all duration-300">
 
     <!-- 1. AUTHENTICATION PORTAL -->
-    <section id="loginScreen" class="bg-slate-800/40 backdrop-blur-xl p-8 rounded-3xl border border-slate-700/50 max-w-md mx-auto mt-12 shadow-2xl shadow-indigo-950/50 relative overflow-hidden">
-      <div class="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <section id="loginScreen" class="glass-card p-10 rounded-[2.5xl] max-w-md mx-auto mt-12 shadow-2xl relative overflow-hidden neon-glow">
+      <div class="absolute -top-32 -right-32 w-56 h-56 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
       
-      <div class="text-center mb-6">
-        <h2 class="text-2xl font-extrabold text-white tracking-tight">Authentication Portal</h2>
-        <p class="text-xs text-slate-400 mt-1">Select your portal role to access Ischool.Prep</p>
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-black text-white tracking-tight">iSchool Enterprise Portal</h2>
+        <p class="text-xs text-slate-400 mt-1.5">Authenticate to enter the secure exam network</p>
       </div>
 
-      <div class="flex gap-2 mb-6 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-700/50">
-        <button onclick="switchLoginTab('student')" id="tabStudent" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow">Student Portal</button>
-        <button onclick="switchLoginTab('teacher')" id="tabTeacher" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">Instructor Portal</button>
+      <div class="flex gap-2 mb-6 bg-slate-950/85 p-1.5 rounded-2xl border border-slate-800 shadow-inner">
+        <button onclick="playClickSound(); switchLoginTab('student')" id="tabStudent" class="flex-1 py-3 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-lg">Student Portal</button>
+        <button onclick="playClickSound(); switchLoginTab('teacher')" id="tabTeacher" class="flex-1 py-3 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">Instructor Portal</button>
       </div>
 
-      <!-- STUDENT LOGIN FORM -->
-      <div id="studentLoginForm" class="space-y-4">
+      <!-- STUDENT LOGIN -->
+      <div id="studentLoginForm" class="space-y-4.5">
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">First Name</label>
-          <input type="text" id="loginFirstName" placeholder="Murad" class="w-full bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">First Name</label>
+          <input type="text" id="loginFirstName" placeholder="Enter first name..." class="w-full bg-slate-950/80 border border-slate-800 p-4 rounded-2xl focus:outline-none focus:border-blue-500 text-sm shadow-inner transition">
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Last Name</label>
-          <input type="text" id="loginLastName" placeholder="Shahmardanov" class="w-full bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Last Name</label>
+          <input type="text" id="loginLastName" placeholder="Enter last name..." class="w-full bg-slate-950/80 border border-slate-800 p-4 rounded-2xl focus:outline-none focus:border-blue-500 text-sm shadow-inner transition">
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Security PIN / Password</label>
-          <input type="password" id="loginStudentPin" placeholder="••••" class="w-full bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl focus:outline-none focus:border-blue-500 text-sm font-mono">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Security PIN</label>
+          <input type="password" id="loginStudentPin" placeholder="••••" class="w-full bg-slate-950/80 border border-slate-800 p-4 rounded-2xl focus:outline-none focus:border-blue-500 text-sm font-mono shadow-inner transition">
         </div>
-        <button onclick="loginStudent()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/30">
+        <button onclick="playClickSound(); loginStudent();" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 rounded-2xl transition shadow-xl shadow-blue-600/30 text-sm tracking-wide">
           Sign In as Student
         </button>
-        <p class="text-[11px] text-center text-slate-500">Demo Student — Name: <b>Murad</b>, Last: <b>Shahmardanov</b>, PIN: <b>6675</b></p>
       </div>
 
-      <!-- TEACHER LOGIN FORM -->
-      <div id="teacherLoginForm" class="space-y-4 hidden">
+      <!-- TEACHER LOGIN -->
+      <div id="teacherLoginForm" class="space-y-4.5 hidden">
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Instructor Username</label>
-          <input type="text" id="loginTeacherUser" placeholder="admin" class="w-full bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl focus:outline-none focus:border-blue-500 text-sm font-mono">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Instructor Username</label>
+          <input type="text" id="loginTeacherUser" placeholder="Enter username..." class="w-full bg-slate-950/80 border border-slate-800 p-4 rounded-2xl focus:outline-none focus:border-blue-500 text-sm font-mono shadow-inner transition">
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Password</label>
-          <input type="password" id="loginTeacherPass" placeholder="••••••••" class="w-full bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl focus:outline-none focus:border-blue-500 text-sm font-mono">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Password</label>
+          <input type="password" id="loginTeacherPass" placeholder="••••••••" class="w-full bg-slate-950/80 border border-slate-800 p-4 rounded-2xl focus:outline-none focus:border-blue-500 text-sm font-mono shadow-inner transition">
         </div>
-        <button onclick="loginTeacher()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-600/30">
+        <button onclick="playClickSound(); loginTeacher();" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-2xl transition shadow-xl shadow-indigo-600/30 text-sm tracking-wide">
           Access Instructor Console
         </button>
-        <p class="text-[11px] text-center text-slate-500">Default Credentials — Username: <b>admin</b>, Password: <b>admin</b></p>
       </div>
     </section>
 
-    <!-- 2. STUDENT DASHBOARD & ANALYTICS -->
+    <!-- 2. STUDENT DASHBOARD -->
     <section id="studentDashboard" class="hidden space-y-6">
-      <div class="flex justify-between items-center bg-slate-800/40 backdrop-blur-md p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+      <div class="glass-card p-7 rounded-[2.5xl] flex justify-between items-center shadow-2xl neon-glow">
         <div>
-          <h2 id="studentWelcomeTitle" class="text-xl font-extrabold text-white">Student Portal</h2>
-          <p id="studentTrackInfo" class="text-xs text-blue-400 mt-0.5 font-semibold">Track: --</p>
+          <h2 id="studentWelcomeTitle" class="text-2xl font-black text-white tracking-tight">Student Portal</h2>
+          <div class="flex items-center gap-3 mt-1.5">
+            <span id="studentTrackInfo" class="text-xs text-blue-400 font-semibold">Track: --</span>
+            <span id="studentBadgeRank" class="bg-blue-500/20 text-blue-300 border border-blue-500/40 text-[10px] px-3.5 py-1 rounded-full font-bold shadow-sm">👑 Grandmaster Scholar</span>
+          </div>
         </div>
-        <button onclick="logout()" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl border border-slate-700/80 transition">Sign Out</button>
+        <button onclick="playClickSound(); logout();" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-5 py-2.5 rounded-xl border border-slate-700/80 transition">Sign Out</button>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-slate-800/40 backdrop-blur-xl p-5 rounded-2xl border border-slate-700/50 shadow-lg">
-          <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Total Exams Taken</span>
-          <h4 id="statTotalExams" class="text-2xl font-black text-white mt-1">0</h4>
+      <!-- TABS NAVIGATION -->
+      <div class="flex gap-2 bg-slate-950/70 p-2 rounded-2xl border border-slate-800 shadow-inner">
+        <button onclick="playClickSound(); switchStudentTab('exams')" id="stTabExams" class="flex-1 py-3 rounded-xl text-xs font-bold bg-blue-600 text-white transition shadow-md">📝 Exam Arena</button>
+        <button onclick="playClickSound(); switchStudentTab('errors')" id="stTabErrors" class="flex-1 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">📖 Error Notebook (<span id="errorCountBadge">0</span>)</button>
+        <button onclick="playClickSound(); switchStudentTab('vocab')" id="stTabVocab" class="flex-1 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">🧠 Mega Vocab Deck</button>
+      </div>
+
+      <!-- TAB 1: EXAMS -->
+      <div id="studentTabExamsContent" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="glass-card p-6 rounded-3xl shadow-xl card-hover">
+            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Total Exams Taken</span>
+            <h4 id="statTotalExams" class="text-3xl font-black text-white mt-1.5">0</h4>
+          </div>
+          <div class="glass-card p-6 rounded-3xl shadow-xl card-hover">
+            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Average Accuracy</span>
+            <h4 id="statAvgAccuracy" class="text-3xl font-black text-emerald-400 mt-1.5">0%</h4>
+          </div>
+          <div class="glass-card p-6 rounded-3xl shadow-xl card-hover">
+            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Target SAT Score</span>
+            <h4 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 mt-1.5">1400+ 🎯</h4>
+          </div>
         </div>
-        <div class="bg-slate-800/40 backdrop-blur-xl p-5 rounded-2xl border border-slate-700/50 shadow-lg">
-          <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Average Accuracy</span>
-          <h4 id="statAvgAccuracy" class="text-2xl font-black text-emerald-400 mt-1">0%</h4>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-7 space-y-4">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 pl-1">📝 Assigned iSchool Exam Modules</h3>
+            <div id="testList" class="space-y-3.5"></div>
+          </div>
+          
+          <div class="lg:col-span-5 glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-5">
+            <div class="flex justify-between items-center border-b border-slate-800/80 pb-3.5">
+              <h3 class="text-xs font-extrabold text-white uppercase tracking-widest">🏆 Top 5 Arena Leaderboard</h3>
+              <select id="leaderboardTestSelect" onchange="renderLeaderboard()" class="bg-slate-950 border border-blue-500/40 text-xs text-blue-300 rounded-xl px-3 py-1.5 focus:outline-none shadow-inner"></select>
+            </div>
+            <div id="leaderboardContainer" class="space-y-2.5"></div>
+          </div>
         </div>
-        <div class="bg-slate-800/40 backdrop-blur-xl p-5 rounded-2xl border border-slate-700/50 shadow-lg">
-          <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Security Rating</span>
-          <h4 id="statSecurityRating" class="text-2xl font-black text-blue-400 mt-1">100% Clean</h4>
+
+        <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-5 mt-6">
+          <h3 class="text-xs font-extrabold text-white uppercase tracking-widest">📈 Performance & Exam History</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-950/70 text-slate-400 border-b border-slate-800 text-xs uppercase tracking-wider">
+                <tr>
+                  <th class="p-4 rounded-l-2xl">Timestamp</th>
+                  <th class="p-4">Exam Title</th>
+                  <th class="p-4">Score</th>
+                  <th class="p-4 rounded-r-2xl">Review & Diagnostics</th>
+                </tr>
+              </thead>
+              <tbody id="studentHistoryBody" class="divide-y divide-slate-800/60"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <div class="space-y-4">
-        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">📝 Assigned Exam Modules</h3>
-        <div id="testList" class="space-y-3"></div>
+      <!-- TAB 2: ERROR NOTEBOOK -->
+      <div id="studentTabErrorsContent" class="hidden space-y-4">
+        <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-5">
+          <div class="flex justify-between items-center border-b border-slate-800/80 pb-4">
+            <div>
+              <h3 class="text-lg font-black text-white">📖 Personal Error Notebook</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Questions you missed in past exams are automatically archived here.</p>
+            </div>
+            <button onclick="playClickSound(); clearErrorNotebook();" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-bold transition">Clear Notebook</button>
+          </div>
+          <div id="errorNotebookContainer" class="space-y-5"></div>
+        </div>
       </div>
 
-      <div class="bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 shadow-xl space-y-4 mt-6">
-        <h3 class="text-sm font-bold text-white uppercase tracking-wider">📈 Performance & Exam History</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-700/80">
-              <tr>
-                <th class="p-3.5 rounded-l-xl">Timestamp</th>
-                <th class="p-3.5">Exam Title</th>
-                <th class="p-3.5">Score</th>
-                <th class="p-3.5 rounded-r-xl">Integrity Status</th>
-              </tr>
-            </thead>
-            <tbody id="studentHistoryBody" class="divide-y divide-slate-700/40"></tbody>
-          </table>
+      <!-- TAB 3: MEGA VOCABULARY DECK -->
+      <div id="studentTabVocabContent" class="hidden space-y-6">
+        <div class="glass-card p-9 rounded-[2.5xl] shadow-2xl max-w-xl mx-auto text-center space-y-6 neon-glow">
+          <div class="flex justify-between items-center text-xs text-slate-400 font-mono">
+            <span>SAT / IELTS High-Frequency Vocabulary</span>
+            <span id="vocabCounter" class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30 font-bold">1 / 30</span>
+          </div>
+          <div onclick="playClickSound(); flipFlashcard();" class="bg-slate-950/80 border border-blue-500/40 p-10 rounded-3xl cursor-pointer shadow-inner min-h-[240px] flex flex-col justify-center items-center transition hover:border-blue-400 card-hover">
+            <h3 id="vocabWord" class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 tracking-wide">Ephemeral</h3>
+            <p id="vocabDefinition" class="text-sm text-slate-300 mt-4 hidden leading-relaxed">Lasting for a very short time; fleeting.</p>
+            <span class="text-[10px] text-slate-500 uppercase tracking-widest mt-6 block">[ Click card to flip definition ]</span>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="playClickSound(); nextFlashcard(-1);" class="flex-1 bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-bold py-3.5 rounded-2xl border border-slate-700 transition shadow">← Previous</button>
+            <button onclick="playClickSound(); nextFlashcard(1);" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-blue-600/30 transition">Next Word →</button>
+          </div>
+
+          <!-- AI CUSTOM FLASHCARD GENERATOR -->
+          <div class="pt-5 border-t border-slate-800/80 space-y-3 text-left">
+            <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">✨ AI Custom Vocab Deck Builder</h4>
+            <div class="flex gap-2">
+              <input type="text" id="aiVocabTopic" placeholder="Enter topic (e.g. Legal & Government)..." class="flex-1 bg-slate-950/90 border border-slate-800 p-3.5 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+              <button onclick="playClickSound(); generateAiVocab();" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-3.5 rounded-xl text-xs transition shadow-md shadow-indigo-600/30">Generate</button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 3. EXAM SECURE SCREEN (WIDE SPLIT LAYOUT: LEFT GIANT QUESTION, RIGHT ANSWERS) -->
+    <!-- 3. EXAM SECURE SCREEN -->
     <section id="examScreen" class="hidden space-y-6">
-      <div class="bg-slate-800/40 backdrop-blur-md p-5 rounded-2xl flex justify-between items-center border border-slate-700/50 shadow-xl">
+      <div class="glass-card p-5 rounded-2xl flex justify-between items-center shadow-2xl neon-glow">
         <div>
           <h3 id="currentTestTitle" class="text-base font-bold text-blue-400">Exam Module</h3>
           <span id="examDurationText" class="text-xs text-slate-400">Time Limit</span>
         </div>
         <div class="flex items-center gap-3">
-          <button id="desmosBtn" onclick="toggleDesmos()" class="hidden bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 px-4 py-2 rounded-xl text-xs font-bold transition items-center gap-1.5 shadow">
+          <button onclick="playClickSound(); toggleScratchpad();" class="bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 border border-amber-500/30 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow">
+            📝 Scratchpad
+          </button>
+          <button id="desmosBtn" onclick="playClickSound(); toggleDesmos();" class="hidden bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 px-4 py-2 rounded-xl text-xs font-bold transition items-center gap-1.5 shadow">
             🧮 Desmos Calculator
           </button>
-          <span id="examTimer" class="bg-slate-900/90 border border-slate-700/80 px-4 py-2 rounded-xl text-sm font-mono text-amber-400 font-bold shadow-inner">⏱️ --:--</span>
-          <span id="cheatCounter" class="bg-red-500/10 text-red-400 border border-red-500/20 text-xs px-3 py-2 rounded-xl font-bold">
-            Violations: 0
-          </span>
+          <span id="examTimer" class="bg-slate-950/90 border border-blue-500/40 px-4.5 py-2 rounded-xl text-sm font-mono text-amber-400 font-bold shadow-inner">⏱️ --:--</span>
         </div>
       </div>
 
-      <!-- ШИРОКОЕ РАЗДЕЛЕНИЕ: СЛЕВА ОГРОМНОЕ ФОТО ВОПРОСА, СПРАВА ОТВЕТЫ -->
+      <div class="glass-card p-4 rounded-2xl flex items-center justify-between gap-4 shadow-xl">
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-400 shrink-0">Question Navigator:</span>
+        <div id="questionGridNav" class="flex flex-wrap gap-2 overflow-x-auto py-1 custom-scrollbar"></div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        <!-- ЛЕВАЯ КОЛОНКА (7 колонок из 12): МАКСИМАЛЬНО ПРОСТОРНОЕ ФОТО ВОПРОСА -->
-        <div id="leftQuestionCol" class="lg:col-span-7 bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 space-y-4 shadow-2xl min-h-[600px] flex flex-col justify-between">
+        <div class="lg:col-span-7 glass-card p-7 rounded-[2.5xl] space-y-5 shadow-2xl min-h-[580px] flex flex-col justify-between">
           <div>
-            <div class="flex justify-between items-center border-b border-slate-700/50 pb-3 mb-4">
-              <h4 id="questionCounterText" class="text-xs font-bold uppercase tracking-wider text-slate-400">Question 1 of 1</h4>
+            <div class="flex justify-between items-center border-b border-slate-800/80 pb-3.5 mb-4">
+              <h4 id="questionCounterText" class="text-xs font-bold uppercase tracking-widest text-slate-400">Question 1 of 1</h4>
+              <button onclick="toggleFlagCurrentQuestion()" id="flagBtn" class="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-lg font-bold transition hover:bg-amber-500/20">
+                🚩 Flag for Review
+              </button>
             </div>
-            <!-- ОГРОМНЫЙ КОНТЕЙНЕР ДЛЯ ФОТО БЕЗ ЛИШНИХ НАДПИСЕЙ -->
-            <div id="questionImageWrapper" class="w-full flex items-center justify-center bg-slate-950/80 border border-slate-700/80 rounded-2xl p-4 shadow-inner min-h-[480px]"></div>
+            <div id="questionImageWrapper" class="w-full flex items-center justify-center bg-slate-950/90 border border-slate-800 rounded-2xl p-4 shadow-inner min-h-[460px]"></div>
           </div>
-          <div class="text-[11px] text-slate-500 italic pt-3 border-t border-slate-700/40 text-center">
-            Ischool.Prep Secure High-Resolution Bluebook View
+          <div class="text-[11px] text-slate-500 italic pt-3 border-t border-slate-800/60 text-center">
+            iSchool Secure High-Resolution Bluebook View
           </div>
         </div>
 
-        <!-- ПРАВАЯ КОЛОНКА (5 колонок из 12): ВАРИАНТЫ ИЛИ ОТКРЫТЫЙ ОТВЕТ -->
-        <div id="rightAnswerCol" class="lg:col-span-5 bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 space-y-6 shadow-2xl min-h-[600px] flex flex-col justify-between">
+        <div class="lg:col-span-5 glass-card p-7 rounded-[2.5xl] space-y-6 shadow-2xl min-h-[580px] flex flex-col justify-between">
           <div class="space-y-4">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-700/50 pb-3">Select Your Answer</h4>
-            <div id="answersContainer" class="space-y-3"></div>
+            <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 border-b border-slate-800/80 pb-3.5">Select Your Answer</h4>
+            <div id="answersContainer" class="space-y-3.5"></div>
           </div>
 
-          <div class="pt-4 border-t border-slate-700/40 flex justify-end">
-            <button onclick="nextQuestion()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-600/30 transition-all transform active:scale-[0.98] text-base">
+          <div class="pt-4 border-t border-slate-800/60 flex justify-between gap-3">
+            <button onclick="playClickSound(); prevQuestion();" id="prevBtn" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-bold px-5 py-3.5 rounded-2xl border border-slate-700 transition shadow">
+              ← Prev
+            </button>
+            <button onclick="playClickSound(); nextQuestion();" id="nextBtn" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-2xl shadow-xl shadow-blue-600/30 transition-all text-base tracking-wide">
               Next Question →
             </button>
           </div>
@@ -242,101 +363,137 @@
 
     <!-- 4. INSTRUCTOR DASHBOARD -->
     <section id="teacherDashboard" class="hidden space-y-8">
-      <div class="flex justify-between items-center bg-slate-800/40 backdrop-blur-md p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+      <div class="glass-card p-7 rounded-[2.5xl] flex justify-between items-center shadow-2xl neon-glow">
         <div>
-          <h2 class="text-xl font-extrabold text-blue-400">Instructor Command Center</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Manage students, section tracks, AI vision tests, and live security audits</p>
+          <h2 id="teacherWelcomeTitle" class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Instructor Command Center</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Classroom Heatmap Analytics, Exam Builder & Detailed Stealth Audit Logs</p>
         </div>
-        <button onclick="logout()" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl border border-slate-700/80 transition">Sign Out</button>
+        <div class="flex gap-2.5">
+          <button onclick="playClickSound(); exportResultsCSV();" class="bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 border border-emerald-500/30 px-4 py-2.5 rounded-xl text-xs font-semibold transition shadow">
+            📥 Export CSV
+          </button>
+          <button onclick="playClickSound(); logout();" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-4 py-2.5 rounded-xl border border-slate-700 transition">Sign Out</button>
+        </div>
+      </div>
+
+      <!-- CLASSROOM METRICS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="glass-card p-6 rounded-3xl shadow-xl card-hover">
+          <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Class Average Raw Score</span>
+          <h4 id="statClassAvg" class="text-3xl font-black text-blue-400 mt-1.5">0 / 0</h4>
+        </div>
+        <div class="glass-card p-6 rounded-3xl shadow-xl card-hover">
+          <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Highest Score (Max)</span>
+          <h4 id="statClassMax" class="text-3xl font-black text-emerald-400 mt-1.5">0 / 0</h4>
+        </div>
+        <div class="glass-card p-6 rounded-3xl shadow-xl card-hover">
+          <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Lowest Score (Min)</span>
+          <h4 id="statClassMin" class="text-3xl font-black text-amber-400 mt-1.5">0 / 0</h4>
+        </div>
       </div>
 
       <!-- STUDENT REGISTRATION & TRACKS -->
-      <div class="bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 shadow-xl space-y-4">
-        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">👤 Register Student & Academic Track</h3>
+      <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-4">
+        <h3 class="text-xs font-extrabold text-white uppercase tracking-widest flex items-center gap-2">👤 Register Student & Academic Track</h3>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <input type="text" id="newStudentFirst" placeholder="First Name (e.g. Murad)" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm focus:outline-none focus:border-blue-500">
-          <input type="text" id="newStudentLast" placeholder="Last Name" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm focus:outline-none focus:border-blue-500">
-          <input type="text" id="newStudentPin" placeholder="Security PIN (6675)" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-mono">
-          <select id="newStudentTrack" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+          <input type="text" id="newStudentFirst" placeholder="First Name (e.g. Ali)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
+          <input type="text" id="newStudentLast" placeholder="Last Name" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
+          <input type="text" id="newStudentPin" placeholder="Security PIN (e.g. 1234)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-inner">
+          <select id="newStudentTrack" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-blue-500 shadow-inner">
             <option value="math">🧮 Math Track Only</option>
             <option value="verbal">📚 Verbal Track Only</option>
             <option value="both">⚡ Full Track (Both)</option>
           </select>
         </div>
-        <button onclick="saveStudent()" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 font-semibold px-5 py-2.5 rounded-xl text-xs transition">
+        <button onclick="playClickSound(); saveStudent();" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 font-semibold px-5 py-2.5 rounded-xl text-xs transition shadow">
           + Register Student to Database
         </button>
         
-        <div class="pt-3 border-t border-slate-700/50">
+        <div class="pt-3 border-t border-slate-800/80">
           <p class="text-[11px] text-slate-400 mb-2 font-medium">Registered Students & Assigned Tracks:</p>
           <div id="studentsListDisplay" class="flex flex-wrap gap-2"></div>
         </div>
       </div>
 
-      <!-- AI VISION TEST PUBLISHER -->
-      <div class="bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 shadow-xl space-y-4">
-        <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">🤖 AI Vision: Publish Exam via Screenshot</h3>
+      <!-- EXAM BUILDER -->
+      <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-5">
+        <div class="flex justify-between items-center border-b border-slate-800/80 pb-4">
+          <h3 class="text-xs font-extrabold text-white uppercase tracking-widest flex items-center gap-2">🤖 Multi-Question Exam Builder</h3>
+          <span id="builderCounterBadge" class="bg-blue-600/20 text-blue-300 border border-blue-500/40 px-3.5 py-1 rounded-full text-xs font-bold">0 Questions Added</span>
+        </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input type="text" id="newTestTitle" placeholder="Exam Title (e.g. SAT Math Module 1)" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm focus:outline-none focus:border-blue-500">
-          <input type="number" id="newTestDuration" placeholder="Time Limit (Minutes)" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm focus:outline-none focus:border-blue-500">
-          <select id="newTestSection" class="bg-slate-900/80 border border-slate-700/80 p-3.5 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+          <input type="text" id="newTestTitle" placeholder="Exam Title (e.g. SAT Math Module 1)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
+          <input type="number" id="newTestDuration" placeholder="Time Limit (Minutes)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
+          <select id="newTestSection" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-blue-500 shadow-inner">
             <option value="math">🧮 Section: Math</option>
             <option value="verbal">📚 Section: Verbal</option>
           </select>
         </div>
 
-        <div class="p-5 bg-slate-900/60 rounded-2xl border border-slate-800 space-y-4">
+        <div class="p-6 bg-slate-950/60 rounded-3xl border border-slate-800/80 space-y-4 shadow-inner">
+          <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Add Current Question to Test:</h4>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-2">📸 Upload Question Screenshot / Image:</label>
-            <input type="file" id="qImageFile" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+            <input type="file" id="qImageFile" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-2xl text-xs text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer shadow-inner">
           </div>
 
           <div id="imagePreviewContainer" class="hidden text-center">
-            <img id="imagePreview" src="" class="max-h-48 mx-auto rounded-xl border border-slate-700 shadow-md" alt="Question Preview">
-            <p class="text-[10px] text-emerald-400 mt-1 font-semibold">✓ Image successfully attached to exam question</p>
+            <img id="imagePreview" src="" class="max-h-48 mx-auto rounded-2xl border border-slate-800 shadow-md" alt="Question Preview">
+            <p class="text-[10px] text-emerald-400 mt-1.5 font-semibold">✓ Image successfully attached to question</p>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Answer Input Format:</label>
-            <select id="qType" onchange="toggleQuestionType()" class="w-full bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Answer Input Format:</label>
+            <select id="qType" onchange="toggleQuestionType()" class="w-full bg-slate-950/90 border border-slate-800 p-3.5 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-blue-500 shadow-inner">
               <option value="mcq">Multiple Choice (4 Options: A, B, C, D)</option>
-              <option value="open">Student-Produced Response (Open Number/Fraction)</option>
+              <option value="open">Student-Produced Response (Open Number / Fraction / Text)</option>
             </select>
           </div>
 
-          <div id="mcqOptionsArea" class="space-y-2">
-            <input type="text" id="qA" placeholder="Option A" class="w-full bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-xl text-sm">
-            <input type="text" id="qB" placeholder="Option B" class="w-full bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-xl text-sm">
-            <input type="text" id="qC" placeholder="Option C" class="w-full bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-xl text-sm">
-            <input type="text" id="qD" placeholder="Option D" class="w-full bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-xl text-sm">
+          <div id="mcqOptionsArea" class="space-y-2.5">
+            <input type="text" id="qA" placeholder="Option A" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
+            <input type="text" id="qB" placeholder="Option B" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
+            <input type="text" id="qC" placeholder="Option C" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
+            <input type="text" id="qD" placeholder="Option D" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Correct Answer Key:</label>
-            <input type="text" id="qCorrect" placeholder="e.g. A or 12.5" class="w-full bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-mono">
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Correct Answer Key (Key for Auto-Grading):</label>
+            <input type="text" id="qCorrect" placeholder="e.g. A (for MCQ) or 12.5 / 3/4 (for Open Response)" class="w-full bg-slate-950/90 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-inner">
           </div>
+
+          <button onclick="playClickSound(); addQuestionToBuilder();" class="w-full bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/40 font-bold py-3.5 rounded-2xl transition text-xs shadow">
+            + Add This Question to Current Exam
+          </button>
         </div>
 
-        <button onclick="saveTest()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-emerald-600/20 transition-all">
-          Publish Exam Module to Student Feed
+        <button onclick="playClickSound(); publishExamModule();" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-emerald-600/30 transition-all text-sm tracking-wide">
+          🚀 Publish Exam Module to Student Feed
         </button>
       </div>
 
-      <!-- LIVE RESULTS & AUDIT TABLE -->
-      <div class="bg-slate-800/40 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/50 shadow-xl">
-        <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">📊 Live Results & Security Audits</h3>
+      <!-- QUESTION BANK & HEATMAP -->
+      <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-4">
+        <h3 class="text-xs font-extrabold text-white uppercase tracking-widest">📂 Question Bank Manager & Heatmap Analytics</h3>
+        <div id="teacherTestListDisplay" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+
+      <!-- LIVE RESULTS & DETAILED AUDIT TABLE -->
+      <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl">
+        <h3 class="text-xs font-extrabold text-white uppercase tracking-widest mb-4">📊 Student Performance & Stealth Proctoring Audit Logs</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
-            <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-700/80">
+            <thead class="bg-slate-950/70 text-slate-400 border-b border-slate-800 text-xs uppercase tracking-wider">
               <tr>
-                <th class="p-3.5 rounded-l-xl">Student Name</th>
-                <th class="p-3.5">Exam Title</th>
-                <th class="p-3.5">Final Score</th>
-                <th class="p-3.5 rounded-r-xl">Security Violations</th>
+                <th class="p-4 rounded-l-2xl">Student Name</th>
+                <th class="p-4">Exam Title</th>
+                <th class="p-4">Score</th>
+                <th class="p-4">Violation Timestamps (Stealth Log)</th>
+                <th class="p-4 rounded-r-2xl">Error Diagnostics & Notes</th>
               </tr>
             </thead>
-            <tbody id="resultsTableBody" class="divide-y divide-slate-700/40"></tbody>
+            <tbody id="resultsTableBody" class="divide-y divide-slate-800/60"></tbody>
           </table>
         </div>
       </div>
@@ -345,28 +502,97 @@
   </main>
 
   <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playClickSound() {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } catch(e) {}
+    }
+
     let currentUser = null;
     let currentStudentPin = null;
     let currentStudentTrack = null;
     let isTeacher = false;
-    let cheatCount = 0;
+    let currentTeacherUsername = "";
+    let stealthViolationsLog = [];
     let currentTest = null;
     let currentQuestionIndex = 0;
     let userAnswers = [];
+    let flaggedQuestions = {};
     let timerInterval = null;
     let timeLeftSeconds = 0;
     let desmosCalculator = null;
     let isDesmosOpen = false;
     let uploadedImageBase64 = "";
 
-    let students = [
+    // POMODORO TIMER
+    let pomoSeconds = 25 * 60;
+    let pomoInterval = null;
+    let isPomoRunning = false;
+
+    // MEGA VOCABULARY DECK (30+ SAT / IELTS WORDS)
+    const vocabList = [
+      { word: "Ephemeral", definition: "Lasting for a very short time; fleeting." },
+      { word: "Pragmatic", definition: "Dealing with things sensibly and realistically." },
+      { word: "Mitigate", definition: "Make less severe, serious, or painful." },
+      { word: "Ambiguous", definition: "Open to more than one interpretation; having a double meaning." },
+      { word: "Cacophony", definition: "A harsh, discordant mixture of sounds." },
+      { word: "Altruistic", definition: "Showing selfless concern for the well-being of others." },
+      { word: "Ineffable", definition: "Too great or extreme to be expressed in words." },
+      { word: "Obfuscate", definition: "Render obscure, unclear, or unintelligible." },
+      { word: "Aberration", definition: "A departure from what is normal, usual, or expected." },
+      { word: "Acquiesce", definition: "Accept something reluctantly but without protest." },
+      { word: "Bandwagon", definition: "A popular party, movement, or cause that attracts growing support." },
+      { word: "Candid", definition: "Truthful and straightforward; frank." },
+      { word: "Deleterious", definition: "Causing harm or damage." },
+      { word: "Efficacy", definition: "The ability to produce a desired or intended result." },
+      { word: "Fastidious", definition: "Very attentive to and concerned about accuracy and detail." },
+      { word: "Gargantuan", definition: "Enormous; gigantic." },
+      { word: "Hierarchy", definition: "A system in which members are ranked according to status." },
+      { word: "Iconoclast", definition: "A person who attacks cherished beliefs or institutions." },
+      { word: "Juxtapose", definition: "Place close together for contrasting effect." },
+      { word: "Kinetic", definition: "Resulting from motion." },
+      { word: "Labyrinth", definition: "A complicated irregular network of passages." },
+      { word: "Meticulous", definition: "Showing great attention to detail; very careful." },
+      { word: "Nefarious", definition: "Wicked or criminal." },
+      { word: "Ostracize", definition: "Exclude from a society or group." },
+      { word: "Paradigm", definition: "A typical example or pattern of something." },
+      { word: "Quintessential", definition: "Representing the most perfect or typical example." },
+      { word: "Recalcitrant", definition: "Having an uncooperative attitude toward authority." },
+      { word: "Sycophant", definition: "A person who acts obsequiously to gain advantage." },
+      { word: "Truculent", definition: "Eager or quick to argue or fight." },
+      { word: "Ubiquitous", definition: "Present, appearing, or found everywhere." }
+    ];
+    let currentVocabIdx = 0;
+    let isVocabFlipped = false;
+
+    let buildingQuestions = [];
+
+    // STRICT DATABASE: 2 TEACHERS & 1 STUDENT (MURAD)
+    let students = JSON.parse(localStorage.getItem('ischool_students')) || [
       { pin: "6675", firstName: "Murad", lastName: "Shahmardanov", track: "both" }
     ];
 
-    let tests = [
+    const teacherAccounts = [
+      { user: "admin", pass: "admin", name: "Lead Instructor (Admin)" },
+      { user: "director", pass: "ischool2026", name: "Director of Academics" }
+    ];
+
+    let tests = JSON.parse(localStorage.getItem('ischool_tests')) || [
       {
         id: 1,
-        title: "Ischool.Prep — SAT Math Baseline",
+        title: "iSchool — SAT Math Baseline",
         duration: 35,
         section: "math",
         questions: [
@@ -380,12 +606,174 @@
       }
     ];
 
-    let results = [];
+    let results = JSON.parse(localStorage.getItem('ischool_results')) || [];
 
     window.addEventListener('DOMContentLoaded', () => {
       const elt = document.getElementById('calculator');
       desmosCalculator = Desmos.GraphingCalculator(elt, { expressions: true, settingsMenu: true });
+      renderStudentsList();
     });
+
+    // POMODORO LOGIC
+    function togglePomodoro() {
+      const btn = document.getElementById('pomoBtn');
+      if (isPomoRunning) {
+        clearInterval(pomoInterval);
+        isPomoRunning = false;
+        btn.innerText = "Start";
+      } else {
+        isPomoRunning = true;
+        btn.innerText = "Pause";
+        pomoInterval = setInterval(() => {
+          if (pomoSeconds > 0) {
+            pomoSeconds--;
+            const m = Math.floor(pomoSeconds / 60);
+            const s = pomoSeconds % 60;
+            document.getElementById('pomoTimer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+          } else {
+            clearInterval(pomoInterval);
+            isPomoRunning = false;
+            alert("Pomodoro session completed! Take a 5-minute break.");
+            pomoSeconds = 25 * 60;
+            btn.innerText = "Start";
+          }
+        }, 1000);
+      }
+    }
+
+    // SCRATCHPAD TOGGLE
+    function toggleScratchpad() {
+      const modal = document.getElementById('scratchpadModal');
+      modal.classList.toggle('hidden');
+    }
+
+    // STUDENT TABS
+    function switchStudentTab(tab) {
+      document.getElementById('studentTabExamsContent').classList.add('hidden');
+      document.getElementById('studentTabErrorsContent').classList.add('hidden');
+      document.getElementById('studentTabVocabContent').classList.add('hidden');
+
+      document.getElementById('stTabExams').className = "flex-1 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition";
+      document.getElementById('stTabErrors').className = "flex-1 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition";
+      document.getElementById('stTabVocab').className = "flex-1 py-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition";
+
+      if (tab === 'exams') {
+        document.getElementById('studentTabExamsContent').classList.remove('hidden');
+        document.getElementById('stTabExams').className = "flex-1 py-3 rounded-xl text-xs font-bold bg-blue-600 text-white transition shadow-md";
+      } else if (tab === 'errors') {
+        document.getElementById('studentTabErrorsContent').classList.remove('hidden');
+        document.getElementById('stTabErrors').className = "flex-1 py-3 rounded-xl text-xs font-bold bg-blue-600 text-white transition shadow-md";
+        renderErrorNotebook();
+      } else if (tab === 'vocab') {
+        document.getElementById('studentTabVocabContent').classList.remove('hidden');
+        document.getElementById('stTabVocab').className = "flex-1 py-3 rounded-xl text-xs font-bold bg-blue-600 text-white transition shadow-md";
+        renderFlashcard();
+      }
+    }
+
+    // FLASHCARDS & AI DECK BUILDER
+    function renderFlashcard() {
+      const card = vocabList[currentVocabIdx];
+      document.getElementById('vocabWord').innerText = card.word;
+      document.getElementById('vocabDefinition').innerText = card.definition;
+      document.getElementById('vocabCounter').innerText = `${currentVocabIdx + 1} / ${vocabList.length}`;
+      if (isVocabFlipped) {
+        document.getElementById('vocabDefinition').classList.remove('hidden');
+      } else {
+        document.getElementById('vocabDefinition').classList.add('hidden');
+      }
+    }
+
+    function flipFlashcard() {
+      isVocabFlipped = !isVocabFlipped;
+      const def = document.getElementById('vocabDefinition');
+      if (isVocabFlipped) def.classList.remove('hidden');
+      else def.classList.add('hidden');
+    }
+
+    function nextFlashcard(dir) {
+      isVocabFlipped = false;
+      currentVocabIdx = (currentVocabIdx + dir + vocabList.length) % vocabList.length;
+      renderFlashcard();
+    }
+
+    function generateAiVocab() {
+      const topic = document.getElementById('aiVocabTopic').value.trim();
+      if (!topic) return alert("Please enter a custom topic for AI generation!");
+      vocabList.unshift({
+        word: topic.toUpperCase() + " TERM",
+        definition: `High-priority custom AI generated concept for domain mastery in ${topic}. Focus on advanced contexts.`
+      });
+      currentVocabIdx = 0;
+      isVocabFlipped = false;
+      document.getElementById('aiVocabTopic').value = "";
+      renderFlashcard();
+      alert("AI custom vocabulary deck expanded successfully!");
+    }
+
+    // ERROR NOTEBOOK
+    function renderErrorNotebook() {
+      const container = document.getElementById('errorNotebookContainer');
+      const key = 'ischool_errors_' + currentStudentPin;
+      let errorNotebook = JSON.parse(localStorage.getItem(key)) || [];
+      document.getElementById('errorCountBadge').innerText = errorNotebook.length;
+
+      if (errorNotebook.length === 0) {
+        container.innerHTML = `<div class="text-slate-500 text-xs text-center p-8 bg-slate-950/50 rounded-2xl border border-slate-800">Your Error Notebook is pristine! Pass exams and missed questions will automatically collect here.</div>`;
+        return;
+      }
+
+      container.innerHTML = errorNotebook.map((item, index) => `
+        <div class="glass-card p-6 rounded-3xl space-y-4 shadow-lg border-red-500/30">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <span class="text-xs font-bold text-red-400">Archived Mistake #${index + 1} (Test: ${item.testTitle})</span>
+            <button onclick="playClickSound(); askAiTutor(${index});" class="bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+              💡 Smart Tutor Explanation
+            </button>
+          </div>
+          ${item.imageUrl ? `
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 w-full overflow-x-auto text-center">
+              <img src="${item.imageUrl}" class="w-full h-auto min-w-[650px] rounded-xl mx-auto object-contain shadow-2xl" alt="Question Graphic">
+            </div>
+          ` : ''}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono pt-2">
+            <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-inner">
+              <span class="text-slate-400 block mb-1">Your Incorrect Answer:</span>
+              <span class="text-red-400 font-bold">${item.userAnswer}</span>
+            </div>
+            <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-inner">
+              <span class="text-slate-400 block mb-1">Correct Solution Key:</span>
+              <span class="text-emerald-400 font-bold">${item.correctAnswer}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function clearErrorNotebook() {
+      if (confirm("Clear all archived errors?")) {
+        const key = 'ischool_errors_' + currentStudentPin;
+        localStorage.removeItem(key);
+        renderErrorNotebook();
+      }
+    }
+
+    function askAiTutor(errorIdx) {
+      const key = 'ischool_errors_' + currentStudentPin;
+      let errorNotebook = JSON.parse(localStorage.getItem(key)) || [];
+      const err = errorNotebook[errorIdx];
+      const content = document.getElementById('aiExplanationContent');
+      content.innerHTML = `
+        <p class="text-blue-400 font-bold">Analyzing question from "${err.testTitle}"...</p>
+        <p>You submitted <b class="text-red-400">${err.userAnswer}</b>, but the official correct key is <b class="text-emerald-400">${err.correctAnswer}</b>.</p>
+        <p class="mt-2 text-slate-300"><b>Smart Breakdown:</b><br>1. Carefully re-read constraints.<br>2. Avoid common distractor traps.<br>3. Apply fundamental equations and re-verify calculations to match key <b>${err.correctAnswer}</b>.</p>
+      `;
+      document.getElementById('aiModal').classList.remove('hidden');
+    }
+
+    function closeAiModal() {
+      document.getElementById('aiModal').classList.add('hidden');
+    }
 
     function toggleDesmos() {
       const sidebar = document.getElementById('desmosSidebar');
@@ -423,13 +811,13 @@
       const teacherForm = document.getElementById('teacherLoginForm');
 
       if (role === 'student') {
-        tabStudent.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow";
-        tabTeacher.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white";
+        tabStudent.className = "flex-1 py-3 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-lg";
+        tabTeacher.className = "flex-1 py-3 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white";
         studentForm.classList.remove('hidden');
         teacherForm.classList.add('hidden');
       } else {
-        tabTeacher.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow";
-        tabStudent.className = "flex-1 py-2.5 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white";
+        tabTeacher.className = "flex-1 py-3 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-lg";
+        tabStudent.className = "flex-1 py-3 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white";
         teacherForm.classList.remove('hidden');
         studentForm.classList.add('hidden');
       }
@@ -438,11 +826,8 @@
     function toggleQuestionType() {
       const type = document.getElementById('qType').value;
       const area = document.getElementById('mcqOptionsArea');
-      if (type === 'open') {
-        area.classList.add('hidden');
-      } else {
-        area.classList.remove('hidden');
-      }
+      if (type === 'open') area.classList.add('hidden');
+      else area.classList.remove('hidden');
     }
 
     function loginStudent() {
@@ -450,15 +835,11 @@
       const lName = document.getElementById('loginLastName').value.trim();
       const pin = document.getElementById('loginStudentPin').value.trim();
 
-      if (!fName || !lName || !pin) {
-        return alert("Please enter First Name, Last Name, and PIN!");
-      }
+      if (!fName || !lName || !pin) return alert("Please enter First Name, Last Name, and Security PIN!");
 
       const foundStudent = students.find(s => s.pin === pin && s.firstName.toLowerCase() === fName.toLowerCase() && s.lastName.toLowerCase() === lName.toLowerCase());
       
-      if (!foundStudent) {
-        return alert("Invalid credentials or security PIN!");
-      }
+      if (!foundStudent) return alert("Invalid student credentials or security PIN!");
 
       isTeacher = false;
       currentStudentPin = pin;
@@ -472,10 +853,14 @@
       document.getElementById('studentWelcomeTitle').innerText = `Student Portal: ${currentUser}`;
       document.getElementById('studentTrackInfo').innerText = `Assigned Track: ${trackText}`;
       
+      updateStudentBadgeRank();
       showSection('studentDashboard');
       renderStudentTests();
+      renderLeaderboardSelectOptions();
+      renderLeaderboard();
       renderStudentHistory();
       updateStudentAnalytics();
+      renderErrorNotebook();
 
       document.getElementById('userInfo').innerText = currentUser;
       document.getElementById('loginScreen').classList.add('hidden');
@@ -485,17 +870,23 @@
       const user = document.getElementById('loginTeacherUser').value.trim();
       const pass = document.getElementById('loginTeacherPass').value.trim();
 
-      if (user === "admin" && pass === "admin") {
+      const foundTeacher = teacherAccounts.find(t => t.user === user && t.pass === pass);
+
+      if (foundTeacher) {
         isTeacher = true;
-        currentUser = "Instructor";
+        currentTeacherUsername = foundTeacher.user;
+        currentUser = foundTeacher.name;
         showSection('teacherDashboard');
+        document.getElementById('teacherWelcomeTitle').innerText = `Instructor Center: ${currentUser}`;
         renderTeacherResults();
         renderStudentsList();
+        renderTeacherTestInspector();
+        updateTeacherClassStatsRaw();
 
         document.getElementById('userInfo').innerText = currentUser;
         document.getElementById('loginScreen').classList.add('hidden');
       } else {
-        alert("Invalid administrator credentials!");
+        alert("Invalid administrator credentials! Please check username or password.");
       }
     }
 
@@ -503,6 +894,7 @@
       currentUser = null;
       currentStudentPin = null;
       currentStudentTrack = null;
+      currentTeacherUsername = "";
       document.getElementById('userInfo').innerText = "Not Authenticated";
       document.getElementById('loginFirstName').value = "";
       document.getElementById('loginLastName').value = "";
@@ -511,7 +903,6 @@
       document.getElementById('loginTeacherPass').value = "";
       
       if (isDesmosOpen) toggleDesmos();
-
       showSection('loginScreen');
     }
 
@@ -532,7 +923,8 @@
       if (students.some(s => s.pin === pin)) return alert("This PIN code is already taken!");
 
       students.push({ pin, firstName: fName, lastName: lName, track });
-      alert(`Student ${fName} ${lName} registered successfully with track: ${track.toUpperCase()}!`);
+      localStorage.setItem('ischool_students', JSON.stringify(students));
+      alert(`Student ${fName} ${lName} registered successfully!`);
       
       document.getElementById('newStudentFirst').value = "";
       document.getElementById('newStudentLast').value = "";
@@ -542,8 +934,9 @@
 
     function renderStudentsList() {
       const display = document.getElementById('studentsListDisplay');
+      if (!display) return;
       display.innerHTML = students.map(s => `
-        <span class="bg-slate-900 border border-slate-700/80 text-xs px-3 py-1.5 rounded-xl text-slate-300">
+        <span class="bg-slate-950 border border-slate-800 text-xs px-3.5 py-2 rounded-xl text-slate-300 shadow-inner">
           <b>${s.firstName} ${s.lastName}</b> (${s.track.toUpperCase()}): <span class="text-blue-400 font-mono">${s.pin}</span>
         </span>
       `).join('');
@@ -557,20 +950,20 @@
       });
 
       if (availableTests.length === 0) {
-        list.innerHTML = `<div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50 text-center text-slate-400 text-xs">No exam modules available for your track (${currentStudentTrack.toUpperCase()}).</div>`;
+        list.innerHTML = `<div class="glass-card p-6 rounded-2xl text-center text-slate-400 text-xs">No exam modules available for your track.</div>`;
         return;
       }
 
       list.innerHTML = availableTests.map(t => `
-        <div class="bg-slate-800/40 backdrop-blur-md p-5 rounded-2xl border border-slate-700/50 flex justify-between items-center shadow-xl hover:border-slate-600/60 transition">
+        <div class="glass-card p-6 rounded-3xl flex justify-between items-center shadow-xl card-hover">
           <div>
-            <div class="flex items-center gap-2">
-              <h4 class="font-bold text-base text-white">${t.title}</h4>
-              <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase ${t.section === 'math' ? 'bg-blue-600/30 text-blue-300 border border-blue-500/30' : 'bg-purple-600/30 text-purple-300 border border-purple-500/30'}">${t.section}</span>
+            <div class="flex items-center gap-2.5">
+              <h4 class="font-extrabold text-base text-white tracking-tight">${t.title}</h4>
+              <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase ${t.section === 'math' ? 'bg-blue-600/30 text-blue-300 border border-blue-500/30' : 'bg-purple-600/30 text-purple-300 border border-purple-500/30'}">${t.section}</span>
             </div>
-            <span class="text-xs text-amber-400 mt-1 inline-block font-medium">⏱️ Time Limit: ${t.duration} mins</span>
+            <span class="text-xs text-amber-400 mt-1.5 inline-block font-medium">⏱️ Time Limit: ${t.duration} mins | Total Qs: ${t.questions.length}</span>
           </div>
-          <button onclick="startExam(${t.id})" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2 rounded-xl shadow-lg shadow-blue-600/30 transition">
+          <button onclick="playClickSound(); startExam(${t.id});" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-600/30 transition">
             Start Exam
           </button>
         </div>
@@ -583,21 +976,125 @@
       
       if (myResults.length > 0) {
         let totalCorrectPercentage = 0;
-        let totalViolations = 0;
         myResults.forEach(r => {
-          const parts = r.score.split(" из ");
+          const parts = r.score.split(" / ");
           if(parts.length === 2) {
             totalCorrectPercentage += (parseInt(parts[0]) / parseInt(parts[1])) * 100;
           }
-          totalViolations += r.cheats;
         });
         const avg = Math.round(totalCorrectPercentage / myResults.length);
         document.getElementById('statAvgAccuracy').innerText = `${avg}%`;
-        document.getElementById('statSecurityRating').innerText = totalViolations === 0 ? "100% Clean" : `${totalViolations} Warnings`;
       } else {
         document.getElementById('statAvgAccuracy').innerText = "0%";
-        document.getElementById('statSecurityRating').innerText = "100% Clean";
       }
+      updateStudentBadgeRank();
+    }
+
+    const badgesCollection = [
+      { threshold: 90, title: "👑 iSchool Grandmaster", color: "bg-amber-500/20 text-amber-300 border-amber-500/40" },
+      { threshold: 80, title: "⚡ SAT Cyber Demon", color: "bg-indigo-500/20 text-indigo-300 border-indigo-500/40" },
+      { threshold: 70, title: "🎯 Math Sniper", color: "bg-blue-500/20 text-blue-300 border-blue-500/40" },
+      { threshold: 60, title: "🚀 Rocket Science Ace", color: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" },
+      { threshold: 50, title: "💎 Elite Academic", color: "bg-purple-500/20 text-purple-300 border-purple-500/40" },
+      { threshold: 0, title: "🔥 iSchool Challenger", color: "bg-slate-700/80 text-slate-300 border-slate-600" }
+    ];
+
+    function updateStudentBadgeRank() {
+      const myResults = results.filter(r => r.studentPin === currentStudentPin);
+      let avgAcc = 0;
+      if (myResults.length > 0) {
+        let sum = 0;
+        myResults.forEach(r => {
+          const p = r.score.split(" / ");
+          if (p.length === 2) sum += (parseInt(p[0]) / parseInt(p[1])) * 100;
+        });
+        avgAcc = sum / myResults.length;
+      }
+      const badge = badgesCollection.find(b => avgAcc >= b.threshold) || badgesCollection[badgesCollection.length - 1];
+      const badgeEl = document.getElementById('studentBadgeRank');
+      if (badgeEl) {
+        badgeEl.className = `text-[10px] px-3.5 py-1 rounded-full font-bold border shadow-sm ${badge.color}`;
+        badgeEl.innerText = badge.title;
+      }
+    }
+
+    function renderLeaderboardSelectOptions() {
+      const select = document.getElementById('leaderboardTestSelect');
+      if (!select) return;
+      select.innerHTML = tests.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+    }
+
+    function renderLeaderboard() {
+      const select = document.getElementById('leaderboardTestSelect');
+      const container = document.getElementById('leaderboardContainer');
+      if (!select || !container) return;
+
+      const selectedTestId = parseInt(select.value);
+      const testRes = results.filter(r => {
+        const matchingTest = tests.find(t => t.id === selectedTestId);
+        return matchingTest && r.testTitle === matchingTest.title;
+      });
+
+      testRes.sort((a, b) => {
+        const scoreA = parseInt(a.score.split(" / ")[0]);
+        const scoreB = parseInt(b.score.split(" / ")[0]);
+        if (scoreB !== scoreA) return scoreB - scoreA;
+        return a.date.localeCompare(b.date);
+      });
+
+      const top5 = testRes.slice(0, 5);
+      if (top5.length === 0) {
+        container.innerHTML = `<div class="text-slate-500 text-xs text-center p-4">No submissions for this test yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = top5.map((r, idx) => {
+        let medal = `#${idx + 1}`;
+        if (idx === 0) medal = "🥇";
+        if (idx === 1) medal = "🥈";
+        if (idx === 2) medal = "🥉";
+
+        return `
+          <div class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl flex justify-between items-center shadow-md">
+            <div class="flex items-center gap-3">
+              <span class="w-7 h-7 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center font-black text-xs text-blue-400">${medal}</span>
+              <div>
+                <h5 class="font-bold text-xs text-white">${r.student}</h5>
+                <span class="text-[10px] text-slate-400 font-mono">${r.date}</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-black text-emerald-400 block">${r.score}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateTeacherClassStatsRaw() {
+      if (results.length === 0) {
+        document.getElementById('statClassAvg').innerText = "0 / 0";
+        document.getElementById('statClassMax').innerText = "0 / 0";
+        document.getElementById('statClassMin').innerText = "0 / 0";
+        return;
+      }
+      let correctValues = [];
+      let maxPossibleValues = [];
+      results.forEach(r => {
+        const parts = r.score.split(" / ");
+        if (parts.length === 2) {
+          correctValues.push(parseInt(parts[0]));
+          maxPossibleValues.push(parseInt(parts[1]));
+        }
+      });
+      const avgCorrect = (correctValues.reduce((a, b) => a + b, 0) / correctValues.length).toFixed(1);
+      const maxCorrect = Math.max(...correctValues);
+      const minCorrect = Math.min(...correctValues);
+      const totalQ = maxPossibleValues[0] || 0;
+
+      document.getElementById('statClassAvg').innerText = `${avgCorrect} / ${totalQ}`;
+      document.getElementById('statClassMax').innerText = `${maxCorrect} / ${totalQ}`;
+      document.getElementById('statClassMin').innerText = `${minCorrect} / ${totalQ}`;
     }
 
     function renderStudentHistory() {
@@ -610,12 +1107,14 @@
       }
 
       body.innerHTML = myResults.map(r => `
-        <tr class="hover:bg-slate-800/30 transition">
-          <td class="p-3.5 text-xs text-slate-400 font-mono">${r.date}</td>
-          <td class="p-3.5 text-white font-medium">${r.testTitle}</td>
-          <td class="p-3.5 text-emerald-400 font-bold">${r.score}</td>
-          <td class="p-3.5 ${r.cheats > 0 ? 'text-red-400 font-bold' : 'text-slate-400'}">
-            ${r.cheats > 0 ? `⚠️ ${r.cheats} warnings` : '0 (Clean)'}
+        <tr class="hover:bg-slate-800/20 transition">
+          <td class="p-4 text-xs text-slate-400 font-mono">${r.date}</td>
+          <td class="p-4 text-white font-medium">${r.testTitle}</td>
+          <td class="p-4 text-emerald-400 font-bold">${r.score}</td>
+          <td class="p-4">
+            <button onclick="playClickSound(); openDiagnostics(${r.id});" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
+              🔍 Review Errors & Details
+            </button>
           </td>
         </tr>
       `).join('');
@@ -623,7 +1122,6 @@
 
     function startExam(testId) {
       currentTest = tests.find(t => t.id === testId);
-
       const desmosBtn = document.getElementById('desmosBtn');
       if (currentTest.section === 'math') {
         desmosBtn.classList.remove('hidden');
@@ -637,14 +1135,15 @@
         document.documentElement.requestFullscreen().catch(()=>{});
       }
 
-      cheatCount = 0;
+      stealthViolationsLog = [];
       currentQuestionIndex = 0;
-      userAnswers = [];
-      updateCheatCounter();
+      userAnswers = new Array(currentTest.questions.length).fill(null);
+      flaggedQuestions = {};
       showSection('examScreen');
       document.getElementById('currentTestTitle').innerText = currentTest.title;
       document.getElementById('examDurationText').innerText = `Limit: ${currentTest.duration} mins`;
       
+      renderQuestionNavGrid();
       renderQuestion();
       startCountdown(currentTest.duration);
     }
@@ -657,7 +1156,6 @@
       timerInterval = setInterval(() => {
         timeLeftSeconds--;
         updateTimerDisplay();
-
         if (timeLeftSeconds <= 0) {
           clearInterval(timerInterval);
           alert("Time is up! Exam submitted automatically.");
@@ -672,11 +1170,69 @@
       document.getElementById('examTimer').innerText = `⏱️ ${m}:${s < 10 ? '0' : ''}${s}`;
     }
 
-    // ОТРИСОВКА ВОПРОСА СЛЕДУЮЩЕГО УРОВНЯ (ФОТО ВО ВСЮ ШИРИНУ БЕЗ ЛИШНИХ ТЕКСТОВ)
+    function renderQuestionNavGrid() {
+      const grid = document.getElementById('questionGridNav');
+      grid.innerHTML = currentTest.questions.map((q, idx) => {
+        const isAnswered = userAnswers[idx] !== null && userAnswers[idx] !== "";
+        const isCurrent = idx === currentQuestionIndex;
+        const isFlagged = flaggedQuestions[idx];
+
+        let statusClass = "bg-slate-900 text-slate-400 border-slate-800";
+        if (isAnswered) statusClass = "bg-emerald-600/30 text-emerald-300 border-emerald-500/50 font-bold";
+        if (isFlagged) statusClass = "bg-amber-600/30 text-amber-300 border-amber-500/60 font-bold ring-2 ring-amber-400/40";
+        if (isCurrent) statusClass = "bg-blue-600 text-white border-blue-400 shadow-lg font-black ring-2 ring-blue-400/50";
+
+        return `
+          <button onclick="playClickSound(); saveCurrentAnswer(); jumpToQuestion(${idx});" class="w-10 h-10 rounded-xl border text-xs transition flex items-center justify-center relative ${statusClass}">
+            ${idx + 1}
+            ${isFlagged ? '<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full"></span>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function toggleFlagCurrentQuestion() {
+      flaggedQuestions[currentQuestionIndex] = !flaggedQuestions[currentQuestionIndex];
+      renderQuestionNavGrid();
+      const flagBtn = document.getElementById('flagBtn');
+      if (flaggedQuestions[currentQuestionIndex]) {
+        flagBtn.className = "text-xs text-amber-300 bg-amber-500/30 border border-amber-500/50 px-3 py-1 rounded-lg font-bold transition shadow";
+        flagBtn.innerText = "🚩 Flagged";
+      } else {
+        flagBtn.className = "text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-lg font-bold transition hover:bg-amber-500/20";
+        flagBtn.innerText = "🚩 Flag for Review";
+      }
+    }
+
+    function saveCurrentAnswer() {
+      const q = currentTest.questions[currentQuestionIndex];
+      if (q.type === 'mcq') {
+        const selected = document.querySelector('input[name="opt"]:checked');
+        if (selected) userAnswers[currentQuestionIndex] = selected.value;
+      } else {
+        const input = document.getElementById('openAnswerInput');
+        if (input) userAnswers[currentQuestionIndex] = input.value.trim() || null;
+      }
+    }
+
+    function jumpToQuestion(index) {
+      currentQuestionIndex = index;
+      renderQuestionNavGrid();
+      renderQuestion();
+    }
+
     function renderQuestion() {
       const q = currentTest.questions[currentQuestionIndex];
-      
       document.getElementById('questionCounterText').innerText = `Question ${currentQuestionIndex + 1} of ${currentTest.questions.length}`;
+
+      const flagBtn = document.getElementById('flagBtn');
+      if (flaggedQuestions[currentQuestionIndex]) {
+        flagBtn.className = "text-xs text-amber-300 bg-amber-500/30 border border-amber-500/50 px-3 py-1 rounded-lg font-bold transition shadow";
+        flagBtn.innerText = "🚩 Flagged";
+      } else {
+        flagBtn.className = "text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-lg font-bold transition hover:bg-amber-500/20";
+        flagBtn.innerText = "🚩 Flag for Review";
+      }
 
       const imgWrapper = document.getElementById('questionImageWrapper');
       if (q.imageUrl) {
@@ -686,35 +1242,45 @@
       }
 
       const answersContainer = document.getElementById('answersContainer');
+      const savedVal = userAnswers[currentQuestionIndex];
+
       if (q.type === 'mcq') {
-        answersContainer.innerHTML = q.options.map((opt) => `
-          <label class="block bg-slate-900/80 border border-slate-700/80 p-4 rounded-2xl cursor-pointer hover:border-blue-500/80 transition shadow-inner">
-            <input type="radio" name="opt" value="${opt[0]}" class="mr-3 accent-blue-500"> ${opt}
-          </label>
-        `).join('');
+        answersContainer.innerHTML = q.options.map((opt) => {
+          const isChecked = savedVal === opt[0] ? 'checked' : '';
+          return `
+            <label class="block bg-slate-950/80 border border-slate-800 p-4 rounded-2xl cursor-pointer hover:border-blue-500 transition shadow-inner">
+              <input type="radio" name="opt" value="${opt[0]}" ${isChecked} class="mr-3 accent-blue-500"> ${opt}
+            </label>
+          `;
+        }).join('');
       } else {
+        const valText = savedVal || '';
         answersContainer.innerHTML = `
           <div class="space-y-3 pt-6">
             <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Student-Produced Response (Enter Answer):</label>
-            <input type="text" id="openAnswerInput" placeholder="e.g. 12.5 or 3/4" class="w-full bg-slate-900/90 border border-slate-700/80 p-4 rounded-xl text-xl font-mono text-center focus:outline-none focus:border-blue-500 text-white tracking-widest shadow-inner">
+            <input type="text" id="openAnswerInput" value="${valText}" placeholder="e.g. 12.5 or 3/4" class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-xl font-mono text-center focus:outline-none focus:border-blue-500 text-white tracking-widest shadow-inner">
           </div>
         `;
+      }
+
+      document.getElementById('prevBtn').disabled = (currentQuestionIndex === 0);
+      document.getElementById('nextBtn').innerText = (currentQuestionIndex === currentTest.questions.length - 1) ? "Submit Exam ✓" : "Next Question →";
+    }
+
+    function prevQuestion() {
+      saveCurrentAnswer();
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuestionNavGrid();
+        renderQuestion();
       }
     }
 
     function nextQuestion() {
-      const q = currentTest.questions[currentQuestionIndex];
-      
-      if (q.type === 'mcq') {
-        const selected = document.querySelector('input[name="opt"]:checked');
-        userAnswers.push(selected ? selected.value : null);
-      } else {
-        const val = document.getElementById('openAnswerInput').value.trim();
-        userAnswers.push(val ? val : null);
-      }
-
-      currentQuestionIndex++;
-      if (currentQuestionIndex < currentTest.questions.length) {
+      saveCurrentAnswer();
+      if (currentQuestionIndex < currentTest.questions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestionNavGrid();
         renderQuestion();
       } else {
         finishExam(false);
@@ -727,6 +1293,8 @@
 
       let correctCount = 0;
       let reviewHtml = "";
+      let detailedLog = [];
+      let newErrorsToArchive = [];
 
       currentTest.questions.forEach((q, i) => {
         const userAns = userAnswers[i] ? userAnswers[i].toString().trim().toUpperCase() : "NO ANSWER";
@@ -734,54 +1302,85 @@
         const isCorrect = (userAns === correctAns);
 
         if (isCorrect) correctCount++;
+        else {
+          newErrorsToArchive.push({
+            testTitle: currentTest.title,
+            imageUrl: q.imageUrl,
+            userAnswer: userAnswers[i] || 'Skipped',
+            correctAnswer: q.correct
+          });
+        }
+
+        detailedLog.push({
+          qIndex: i + 1,
+          qType: q.type,
+          imageUrl: q.imageUrl,
+          userAnswer: userAnswers[i] || 'Skipped',
+          correctAnswer: q.correct,
+          isCorrect: isCorrect
+        });
 
         reviewHtml += `
-          <div class="bg-slate-800/80 border ${isCorrect ? 'border-emerald-500/40' : 'border-red-500/40'} p-4 rounded-2xl space-y-2">
-            <div class="flex justify-between items-center">
-              <span class="text-xs font-bold text-slate-400">Question ${i + 1}</span>
-              <span class="text-xs px-2.5 py-1 rounded-lg font-bold ${isCorrect ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
-                ${isCorrect ? '✓ Correct' : '✕ Incorrect'}
+          <div class="glass-card p-6 rounded-3xl space-y-4 shadow-xl ${isCorrect ? 'border-emerald-500/40' : 'border-red-500/40'}">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+              <span class="text-xs font-black uppercase tracking-wider text-slate-300">Question ${i + 1} (${q.type.toUpperCase()})</span>
+              <span class="text-xs px-3.5 py-1 rounded-xl font-extrabold ${isCorrect ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}">
+                ${isCorrect ? '✓ Correct' : '✕ Error Analysis'}
               </span>
             </div>
-            ${q.imageUrl ? `<img src="${q.imageUrl}" class="max-h-48 rounded-xl my-2 mx-auto bg-black/40 object-contain" alt="Task graphic">` : ''}
-            <div class="text-xs space-y-1 pt-1 border-t border-slate-700/60 font-mono">
-              <p class="text-slate-300">Your Answer: <span class="${isCorrect ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}">${userAnswers[i] || 'Skipped'}</span></p>
-              ${!isCorrect ? `<p class="text-emerald-400">Correct Answer: <span class="font-bold">${q.correct}</span></p>` : ''}
+            ${q.imageUrl ? `
+              <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 w-full overflow-x-auto text-center">
+                <img src="${q.imageUrl}" class="w-full h-auto min-w-[650px] rounded-xl mx-auto object-contain shadow-2xl" alt="Question Graphic">
+              </div>
+            ` : ''}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+              <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-inner">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">Your Submitted Answer</span>
+                <span class="text-sm font-mono font-bold ${isCorrect ? 'text-emerald-400' : 'text-red-400'}">${userAnswers[i] || 'Skipped'}</span>
+              </div>
+              <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-inner">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">Correct Solution Key</span>
+                <span class="text-sm font-mono font-bold text-emerald-400">${q.correct}</span>
+              </div>
             </div>
           </div>
         `;
       });
+
+      if (newErrorsToArchive.length > 0) {
+        const errKey = 'ischool_errors_' + currentStudentPin;
+        let existingErrors = JSON.parse(localStorage.getItem(errKey)) || [];
+        existingErrors.push(...newErrorsToArchive);
+        localStorage.setItem(errKey, JSON.stringify(existingErrors));
+      }
 
       const total = currentTest.questions.length;
       const percentage = (correctCount / total) * 100;
 
       let badge = "🏆";
       let title = "Outstanding! Perfect Execution!";
-      if (percentage < 50) {
-        badge = "💪";
-        title = "Keep Practicing, Tiger!";
-      } else if (percentage < 80) {
-        badge = "🔥";
-        title = "Great Job, Solid Score!";
-      }
+      if (percentage < 50) { badge = "💪"; title = "Keep Practicing, Tiger!"; }
+      else if (percentage < 80) { badge = "🔥"; title = "Great Job, Solid Score!"; }
 
       document.getElementById('resultBadge').innerText = badge;
       document.getElementById('resultTitle').innerText = title;
-      document.getElementById('resScore').innerText = `${correctCount} из ${total}`;
-      document.getElementById('resCheats').innerText = cheatCount;
+      document.getElementById('resScore').innerText = `${correctCount} / ${total}`;
       document.getElementById('reviewContainer').innerHTML = reviewHtml;
       document.getElementById('resultModal').classList.remove('hidden');
 
       const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " " + new Date().toLocaleDateString();
-
       results.push({
+        id: Date.now(),
         student: currentUser,
         studentPin: currentStudentPin,
         testTitle: currentTest.title,
-        score: `${correctCount} из ${total}`,
-        cheats: cheatCount,
-        date: nowStr
+        score: `${correctCount} / ${total}`,
+        violationsLog: [...stealthViolationsLog],
+        teacherNote: "Great attempt, keep refining accuracy!",
+        date: nowStr,
+        detailedLog: detailedLog
       });
+      localStorage.setItem('ischool_results', JSON.stringify(results));
 
       if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
     }
@@ -790,49 +1389,30 @@
       document.getElementById('resultModal').classList.add('hidden');
       showSection('studentDashboard');
       renderStudentTests();
+      renderLeaderboardSelectOptions();
+      renderLeaderboard();
       renderStudentHistory();
       updateStudentAnalytics();
+      renderErrorNotebook();
     }
 
     function registerCheat() {
       if (!document.getElementById('examScreen').classList.contains('hidden')) {
-        cheatCount++;
-        updateCheatCounter();
-        const warn = document.getElementById('cheatWarning');
-        warn.classList.remove('hidden');
-        setTimeout(() => warn.classList.add('hidden'), 4000);
+        const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        stealthViolationsLog.push(timeString);
       }
     }
 
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) registerCheat();
-    });
+    document.addEventListener("visibilitychange", () => { if (document.hidden) registerCheat(); });
     window.addEventListener("blur", () => registerCheat());
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") registerCheat();
-    });
-    document.addEventListener("fullscreenchange", () => {
-      if (!document.fullscreenElement) registerCheat();
-    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") registerCheat(); });
 
-    function updateCheatCounter() {
-      document.getElementById('cheatCounter').innerText = `Violations: ${cheatCount}`;
-    }
-
-    function saveTest() {
-      const title = document.getElementById('newTestTitle').value.trim();
-      const duration = parseInt(document.getElementById('newTestDuration').value);
-      const section = document.getElementById('newTestSection').value;
+    function addQuestionToBuilder() {
       const qType = document.getElementById('qType').value;
       const qCorrect = document.getElementById('qCorrect').value.trim();
 
-      if (!title || !duration || !qCorrect) {
-        return alert("Please fill in exam title, time limit, and correct answer!");
-      }
-
-      if (!uploadedImageBase64) {
-        return alert("Please upload a question screenshot/image!");
-      }
+      if (!qCorrect) return alert("Please enter the correct answer key!");
+      if (!uploadedImageBase64) return alert("Please upload a question screenshot/image!");
 
       let options = [];
       if (qType === 'mcq') {
@@ -843,46 +1423,201 @@
         options = [`A) ${qA}`, `B) ${qB}`, `C) ${qC}`, `D) ${qD}`];
       }
 
+      buildingQuestions.push({
+        imageUrl: uploadedImageBase64,
+        type: qType,
+        options: options,
+        correct: qCorrect
+      });
+
+      uploadedImageBase64 = "";
+      document.getElementById('qImageFile').value = "";
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+      document.getElementById('qCorrect').value = "";
+      document.getElementById('qA').value = "";
+      document.getElementById('qB').value = "";
+      document.getElementById('qC').value = "";
+      document.getElementById('qD').value = "";
+
+      document.getElementById('builderCounterBadge').innerText = `${buildingQuestions.length} Questions Added`;
+      alert(`Question #${buildingQuestions.length} added successfully!`);
+    }
+
+    function publishExamModule() {
+      const title = document.getElementById('newTestTitle').value.trim();
+      const duration = parseInt(document.getElementById('newTestDuration').value);
+      const section = document.getElementById('newTestSection').value;
+
+      if (!title || !duration) return alert("Please fill in the exam title and time limit!");
+      if (buildingQuestions.length === 0) return alert("Please add at least one question!");
+
       tests.push({
         id: Date.now(),
         title: title,
         duration: duration,
         section: section,
-        questions: [
-          {
-            imageUrl: uploadedImageBase64,
-            type: qType,
-            options: options,
-            correct: qCorrect
-          }
-        ]
+        questions: [...buildingQuestions]
       });
 
-      alert(`Exam module for section [${section.toUpperCase()}] published successfully!`);
+      localStorage.setItem('ischool_tests', JSON.stringify(tests));
+      alert(`Exam module "${title}" published successfully!`);
+      
       document.getElementById('newTestTitle').value = "";
       document.getElementById('newTestDuration').value = "";
-      document.getElementById('qCorrect').value = "";
-      document.getElementById('qImageFile').value = "";
-      document.getElementById('imagePreviewContainer').classList.add('hidden');
-      uploadedImageBase64 = "";
+      buildingQuestions = [];
+      document.getElementById('builderCounterBadge').innerText = `0 Questions Added`;
+      renderTeacherTestInspector();
+    }
+
+    function calculateQuestionSuccessRate(testTitle, qIdx) {
+      const testResults = results.filter(r => r.testTitle === testTitle && r.detailedLog);
+      if (testResults.length === 0) return "0% (No attempts)";
+      
+      let correctCount = 0;
+      testResults.forEach(r => {
+        const item = r.detailedLog.find(d => d.qIndex === qIdx + 1);
+        if (item && item.isCorrect) correctCount++;
+      });
+
+      const percent = Math.round((correctCount / testResults.length) * 100);
+      return `${percent}% (${correctCount}/${testResults.length} students)`;
+    }
+
+    function renderTeacherTestInspector() {
+      const display = document.getElementById('teacherTestListDisplay');
+      if (!display) return;
+
+      if (tests.length === 0) {
+        display.innerHTML = `<div class="col-span-2 text-slate-500 text-xs text-center p-4">No exam modules created.</div>`;
+        return;
+      }
+
+      display.innerHTML = tests.map(t => `
+        <div class="bg-slate-950/80 border border-slate-800 p-5 rounded-3xl space-y-3 shadow-lg">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+            <h4 class="font-bold text-sm text-white">${t.title}</h4>
+            <span class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded ${t.section === 'math' ? 'bg-blue-600/30 text-blue-300' : 'bg-purple-600/30 text-purple-300'}">${t.section}</span>
+          </div>
+          <p class="text-xs text-slate-400">Time Limit: <b>${t.duration} mins</b> | Total Questions: <b>${t.questions.length}</b></p>
+          
+          <div class="space-y-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+            ${t.questions.map((q, idx) => {
+              const successRate = calculateQuestionSuccessRate(t.title, idx);
+              return `
+                <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800 space-y-2 shadow-inner">
+                  <div class="flex justify-between text-xs font-semibold">
+                    <span class="text-blue-400">Q${idx + 1} (${q.type.toUpperCase()}) | Key: <b class="text-emerald-400 font-mono">${q.correct}</b></span>
+                    <span class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded text-[10px] font-bold">Class Success: ${successRate}</span>
+                  </div>
+                  ${q.imageUrl ? `
+                    <div class="w-full overflow-x-auto text-center">
+                      <img src="${q.imageUrl}" class="w-full h-auto min-w-[300px] max-h-32 rounded-xl mx-auto object-contain border border-slate-800" alt="Question photo">
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <button onclick="playClickSound(); deleteTest(${t.id});" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 py-2.5 rounded-2xl text-xs font-bold transition">
+            Delete Exam Module
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function deleteTest(testId) {
+      if (confirm("Delete this exam module?")) {
+        tests = tests.filter(t => t.id !== testId);
+        localStorage.setItem('ischool_tests', JSON.stringify(tests));
+        renderTeacherTestInspector();
+      }
     }
 
     function renderTeacherResults() {
       const body = document.getElementById('resultsTableBody');
       if (results.length === 0) {
-        body.innerHTML = `<tr><td colspan="4" class="p-4 text-slate-500 text-center">No student exam attempts recorded yet.</td></tr>`;
+        body.innerHTML = `<tr><td colspan="5" class="p-4 text-slate-500 text-center">No student exam attempts recorded yet.</td></tr>`;
         return;
       }
-      body.innerHTML = results.map(r => `
-        <tr class="hover:bg-slate-800/30 transition">
-          <td class="p-3.5 font-bold text-white">${r.student}</td>
-          <td class="p-3.5 text-slate-300">${r.testTitle}</td>
-          <td class="p-3.5 text-emerald-400 font-bold">${r.score}</td>
-          <td class="p-3.5 ${r.cheats > 0 ? 'text-red-400 font-bold' : 'text-slate-400'}">
-            ${r.cheats > 0 ? `⚠️ ${r.cheats} warnings` : '0 (Clean)'}
-          </td>
-        </tr>
+      body.innerHTML = results.map(r => {
+        let violationsHTML = `<span class="text-emerald-400 font-semibold">0 (Clean Exam)</span>`;
+        if (r.violationsLog && r.violationsLog.length > 0) {
+          violationsHTML = `<div class="space-y-1"><span class="bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded text-[10px] font-bold">${r.violationsLog.length} violations</span><div class="text-[11px] font-mono text-amber-300">${r.violationsLog.join(', ')}</div></div>`;
+        }
+
+        return `
+          <tr class="hover:bg-slate-800/20 transition">
+            <td class="p-4 font-bold text-white">${r.student}</td>
+            <td class="p-4 text-slate-300">${r.testTitle}</td>
+            <td class="p-4 text-emerald-400 font-bold">${r.score}</td>
+            <td class="p-4">${violationsHTML}</td>
+            <td class="p-4 space-y-2">
+              <button onclick="playClickSound(); openDiagnostics(${r.id});" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shadow block w-full text-center">
+                🔍 View Diagnostics
+              </button>
+              <div class="text-[11px] text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 p-2 rounded-xl italic">
+                Note: "${r.teacherNote || 'Keep pushing!'}"
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openDiagnostics(resultId) {
+      const res = results.find(r => r.id === resultId);
+      if (!res || !res.detailedLog) return alert("No detailed diagnostics available.");
+
+      let violationsText = "None (Clean Exam)";
+      if (res.violationsLog && res.violationsLog.length > 0) {
+        violationsText = `${res.violationsLog.length} violations at: ${res.violationsLog.join(', ')}`;
+      }
+
+      document.getElementById('diagStudentName').innerText = `Diagnostics: ${res.student}`;
+      document.getElementById('diagTestTitle').innerText = `${res.testTitle} — Final Score: ${res.score} | Stealth Log: [${violationsText}]`;
+
+      const container = document.getElementById('diagContainer');
+      container.innerHTML = res.detailedLog.map(item => `
+        <div class="glass-card p-6 rounded-3xl space-y-4 ${item.isCorrect ? 'border-emerald-500/30' : 'border-red-500/30'}">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <span class="text-xs font-bold text-slate-400">Question ${item.qIndex} (${item.qType.toUpperCase()})</span>
+            <span class="text-xs px-3.5 py-1 rounded-xl font-bold ${item.isCorrect ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
+              ${item.isCorrect ? '✓ Correct' : '✕ Error Detected'}
+            </span>
+          </div>
+          ${item.imageUrl ? `
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 w-full overflow-x-auto text-center">
+              <img src="${item.imageUrl}" class="w-full h-auto min-w-[650px] rounded-xl mx-auto object-contain bg-black/40 shadow-2xl" alt="Question Graphic">
+            </div>
+          ` : ''}
+          <div class="text-xs space-y-2 pt-2 border-t border-slate-800 font-mono">
+            <p class="text-slate-300">Submitted Answer: <span class="${item.isCorrect ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}">${item.userAnswer}</span></p>
+            ${!item.isCorrect ? `<p class="text-emerald-400">Correct Answer Key: <span class="font-bold">${item.correctAnswer}</span></p>` : ''}
+          </div>
+        </div>
       `).join('');
+
+      document.getElementById('diagModal').classList.remove('hidden');
+    }
+
+    function closeDiagModal() {
+      document.getElementById('diagModal').classList.add('hidden');
+    }
+
+    function exportResultsCSV() {
+      if (results.length === 0) return alert("No results to export.");
+      let csv = "Student,Exam Title,Score,ViolationTimes,Timestamp\n";
+      results.forEach(r => {
+        const vLogs = r.violationsLog ? r.violationsLog.join(' | ') : 'None';
+        csv += `"${r.student}","${r.testTitle}","${r.score}","${vLogs}","${r.date}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', 'ischool_prep_results.csv');
+      a.click();
     }
 
     document.addEventListener("contextmenu", e => e.preventDefault());
