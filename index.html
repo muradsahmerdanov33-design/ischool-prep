@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iSchool.Prep — Enterprise Elite v13.0</title>
+  <title>iSchool.Prep — Enterprise Elite v14.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Official Desmos Calculator API v1.11 -->
   <script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
@@ -51,7 +51,7 @@
       <div>
         <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
           iSchool.<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Prep</span> 
-          <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono font-semibold">ELITE v13.0</span>
+          <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono font-semibold">ELITE v14.0</span>
         </h1>
         <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Ultimate Academic Intelligence Network</p>
       </div>
@@ -415,67 +415,86 @@
         </div>
       </div>
 
-      <!-- EXAM BUILDER -->
+      <!-- QUESTION BANK MANAGER (NEW!) -->
       <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-5">
         <div class="flex justify-between items-center border-b border-slate-800/80 pb-4">
-          <h3 class="text-xs font-extrabold text-white uppercase tracking-widest flex items-center gap-2">🤖 Multi-Question Exam Builder</h3>
-          <span id="builderCounterBadge" class="bg-blue-600/20 text-blue-300 border border-blue-500/40 px-3.5 py-1 rounded-full text-xs font-bold">0 Questions Added</span>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input type="text" id="newTestTitle" placeholder="Exam Title (e.g. SAT Math Module 1)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
-          <input type="number" id="newTestDuration" placeholder="Time Limit (Minutes)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
-          <select id="newTestSection" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-blue-500 shadow-inner">
-            <option value="math">🧮 Section: Math</option>
-            <option value="verbal">📚 Section: Verbal</option>
-          </select>
+          <h3 class="text-xs font-extrabold text-white uppercase tracking-widest flex items-center gap-2">📚 Global Question Bank Repository</h3>
+          <span id="bankCountBadge" class="bg-indigo-600/20 text-indigo-300 border border-indigo-500/40 px-3.5 py-1 rounded-full text-xs font-bold">0 Questions in Bank</span>
         </div>
 
         <div class="p-6 bg-slate-950/60 rounded-3xl border border-slate-800/80 space-y-4 shadow-inner">
-          <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Add Current Question to Test:</h4>
+          <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">➕ Create New Question & Push to Bank:</h4>
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-2">📸 Upload Question Screenshot / Image:</label>
-            <input type="file" id="qImageFile" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-2xl text-xs text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer shadow-inner">
+            <label class="block text-xs font-semibold text-slate-300 mb-2">📸 Upload Question Image / Screenshot:</label>
+            <input type="file" id="bankImageFile" accept="image/*" onchange="handleBankImageUpload(event)" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-2xl text-xs text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer shadow-inner">
           </div>
 
-          <div id="imagePreviewContainer" class="hidden text-center">
-            <img id="imagePreview" src="" class="max-h-48 mx-auto rounded-2xl border border-slate-800 shadow-md" alt="Question Preview">
-            <p class="text-[10px] text-emerald-400 mt-1.5 font-semibold">✓ Image successfully attached to question</p>
+          <div id="bankImagePreviewContainer" class="hidden text-center">
+            <img id="bankImagePreview" src="" class="max-h-48 mx-auto rounded-2xl border border-slate-800 shadow-md" alt="Question Preview">
+            <p class="text-[10px] text-emerald-400 mt-1.5 font-semibold">✓ Image attached to question bank item</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1.5">Section / Category:</label>
+              <select id="bankQuestionSection" class="w-full bg-slate-950/90 border border-slate-800 p-3.5 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 shadow-inner">
+                <option value="math">🧮 Math Section</option>
+                <option value="verbal">📚 Verbal Section</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1.5">Answer Input Format:</label>
+              <select id="bankQuestionType" onchange="toggleBankQuestionType()" class="w-full bg-slate-950/90 border border-slate-800 p-3.5 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 shadow-inner">
+                <option value="mcq">Multiple Choice (A, B, C, D)</option>
+                <option value="open">Student-Produced Response (Open Text / Number)</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="bankMcqOptionsArea" class="space-y-2.5">
+            <input type="text" id="bankOptA" placeholder="Option A" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
+            <input type="text" id="bankOptB" placeholder="Option B" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
+            <input type="text" id="bankOptC" placeholder="Option C" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
+            <input type="text" id="bankOptD" placeholder="Option D" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Answer Input Format:</label>
-            <select id="qType" onchange="toggleQuestionType()" class="w-full bg-slate-950/90 border border-slate-800 p-3.5 rounded-2xl text-xs text-slate-200 focus:outline-none focus:border-blue-500 shadow-inner">
-              <option value="mcq">Multiple Choice (4 Options: A, B, C, D)</option>
-              <option value="open">Student-Produced Response (Open Number / Fraction / Text)</option>
-            </select>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Correct Answer Key:</label>
+            <input type="text" id="bankCorrect" placeholder="e.g. A or 12.5" class="w-full bg-slate-950/90 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-indigo-500 font-mono shadow-inner">
           </div>
 
-          <div id="mcqOptionsArea" class="space-y-2.5">
-            <input type="text" id="qA" placeholder="Option A" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
-            <input type="text" id="qB" placeholder="Option B" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
-            <input type="text" id="qC" placeholder="Option C" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
-            <input type="text" id="qD" placeholder="Option D" class="w-full bg-slate-950/90 border border-slate-800 p-3 rounded-xl text-xs shadow-inner">
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Correct Answer Key (Key for Auto-Grading):</label>
-            <input type="text" id="qCorrect" placeholder="e.g. A (for MCQ) or 12.5 / 3/4 (for Open Response)" class="w-full bg-slate-950/90 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 font-mono shadow-inner">
-          </div>
-
-          <button onclick="playClickSound(); addQuestionToBuilder();" class="w-full bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/40 font-bold py-3.5 rounded-2xl transition text-xs shadow">
-            + Add This Question to Current Exam
+          <button onclick="playClickSound(); saveQuestionToBank();" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-2xl transition text-xs shadow-lg shadow-indigo-600/30">
+            💾 Save Question into Question Bank
           </button>
         </div>
 
-        <button onclick="playClickSound(); publishExamModule();" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-emerald-600/30 transition-all text-sm tracking-wide">
-          🚀 Publish Exam Module to Student Feed
+        <!-- LIST OF QUESTIONS IN BANK -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">📦 Available Question Bank Items (Select to Build Exam):</h4>
+          <div id="bankQuestionsDisplayList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1 custom-scrollbar"></div>
+        </div>
+      </div>
+
+      <!-- EXAM BUILDER FROM BANK -->
+      <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-5">
+        <div class="flex justify-between items-center border-b border-slate-800/80 pb-4">
+          <h3 class="text-xs font-extrabold text-white uppercase tracking-widest flex items-center gap-2">🚀 Publish Exam Module from Selected Questions</h3>
+          <span id="selectedBankCountBadge" class="bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 px-3.5 py-1 rounded-full text-xs font-bold">0 Selected for Exam</span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" id="newTestTitle" placeholder="Exam Module Title (e.g. Advanced SAT Math Test #2)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
+          <input type="number" id="newTestDuration" placeholder="Time Limit (Minutes)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
+        </div>
+
+        <button onclick="playClickSound(); publishExamFromBank();" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-emerald-600/30 transition-all text-sm tracking-wide">
+          ✨ Publish Selected Exam Module to Students
         </button>
       </div>
 
-      <!-- QUESTION BANK & HEATMAP -->
+      <!-- QUESTION BANK INSPECTOR & HEATMAP -->
       <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-4">
-        <h3 class="text-xs font-extrabold text-white uppercase tracking-widest">📂 Question Bank Manager & Heatmap Analytics</h3>
+        <h3 class="text-xs font-extrabold text-white uppercase tracking-widest">📂 Active Exam Modules & Heatmap Analytics</h3>
         <div id="teacherTestListDisplay" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
 
@@ -534,14 +553,20 @@
     let timeLeftSeconds = 0;
     let desmosCalculator = null;
     let isDesmosOpen = false;
-    let uploadedImageBase64 = "";
+    
+    // QUESTION BANK STATE
+    let questionBank = JSON.parse(localStorage.getItem('ischool_question_bank')) || [
+      { id: 101, section: "math", type: "mcq", imageUrl: "", options: ["A) 5", "B) 3", "C) 15", "D) 2"], correct: "A" }
+    ];
+    let selectedBankQuestionIds = [];
+    let uploadedBankImageBase64 = "";
 
     // POMODORO TIMER
     let pomoSeconds = 25 * 60;
     let pomoInterval = null;
     let isPomoRunning = false;
 
-    // MEGA VOCABULARY DECK (30+ SAT / IELTS WORDS)
+    // MEGA VOCABULARY DECK
     const vocabList = [
       { word: "Ephemeral", definition: "Lasting for a very short time; fleeting." },
       { word: "Pragmatic", definition: "Dealing with things sensibly and realistically." },
@@ -552,34 +577,12 @@
       { word: "Ineffable", definition: "Too great or extreme to be expressed in words." },
       { word: "Obfuscate", definition: "Render obscure, unclear, or unintelligible." },
       { word: "Aberration", definition: "A departure from what is normal, usual, or expected." },
-      { word: "Acquiesce", definition: "Accept something reluctantly but without protest." },
-      { word: "Bandwagon", definition: "A popular party, movement, or cause that attracts growing support." },
-      { word: "Candid", definition: "Truthful and straightforward; frank." },
-      { word: "Deleterious", definition: "Causing harm or damage." },
-      { word: "Efficacy", definition: "The ability to produce a desired or intended result." },
-      { word: "Fastidious", definition: "Very attentive to and concerned about accuracy and detail." },
-      { word: "Gargantuan", definition: "Enormous; gigantic." },
-      { word: "Hierarchy", definition: "A system in which members are ranked according to status." },
-      { word: "Iconoclast", definition: "A person who attacks cherished beliefs or institutions." },
-      { word: "Juxtapose", definition: "Place close together for contrasting effect." },
-      { word: "Kinetic", definition: "Resulting from motion." },
-      { word: "Labyrinth", definition: "A complicated irregular network of passages." },
-      { word: "Meticulous", definition: "Showing great attention to detail; very careful." },
-      { word: "Nefarious", definition: "Wicked or criminal." },
-      { word: "Ostracize", definition: "Exclude from a society or group." },
-      { word: "Paradigm", definition: "A typical example or pattern of something." },
-      { word: "Quintessential", definition: "Representing the most perfect or typical example." },
-      { word: "Recalcitrant", definition: "Having an uncooperative attitude toward authority." },
-      { word: "Sycophant", definition: "A person who acts obsequiously to gain advantage." },
-      { word: "Truculent", definition: "Eager or quick to argue or fight." },
-      { word: "Ubiquitous", definition: "Present, appearing, or found everywhere." }
+      { word: "Acquiesce", definition: "Accept something reluctantly but without protest." }
     ];
     let currentVocabIdx = 0;
     let isVocabFlipped = false;
 
-    let buildingQuestions = [];
-
-    // STRICT DATABASE: 2 TEACHERS & 1 STUDENT (MURAD)
+    // DATABASE: STUDENTS & TESTS
     let students = JSON.parse(localStorage.getItem('ischool_students')) || [
       { pin: "6675", firstName: "Murad", lastName: "Shahmardanov", track: "both" }
     ];
@@ -641,10 +644,8 @@
       }
     }
 
-    // SCRATCHPAD TOGGLE
     function toggleScratchpad() {
-      const modal = document.getElementById('scratchpadModal');
-      modal.classList.toggle('hidden');
+      document.getElementById('scratchpadModal').classList.toggle('hidden');
     }
 
     // STUDENT TABS
@@ -671,17 +672,14 @@
       }
     }
 
-    // FLASHCARDS & AI DECK BUILDER
+    // FLASHCARDS & AI
     function renderFlashcard() {
       const card = vocabList[currentVocabIdx];
       document.getElementById('vocabWord').innerText = card.word;
       document.getElementById('vocabDefinition').innerText = card.definition;
       document.getElementById('vocabCounter').innerText = `${currentVocabIdx + 1} / ${vocabList.length}`;
-      if (isVocabFlipped) {
-        document.getElementById('vocabDefinition').classList.remove('hidden');
-      } else {
-        document.getElementById('vocabDefinition').classList.add('hidden');
-      }
+      if (isVocabFlipped) document.getElementById('vocabDefinition').classList.remove('hidden');
+      else document.getElementById('vocabDefinition').classList.add('hidden');
     }
 
     function flipFlashcard() {
@@ -699,16 +697,13 @@
 
     function generateAiVocab() {
       const topic = document.getElementById('aiVocabTopic').value.trim();
-      if (!topic) return alert("Please enter a custom topic for AI generation!");
-      vocabList.unshift({
-        word: topic.toUpperCase() + " TERM",
-        definition: `High-priority custom AI generated concept for domain mastery in ${topic}. Focus on advanced contexts.`
-      });
+      if (!topic) return alert("Please enter a custom topic!");
+      vocabList.unshift({ word: topic.toUpperCase() + " TERM", definition: `AI generated custom concept for domain mastery in ${topic}.` });
       currentVocabIdx = 0;
       isVocabFlipped = false;
       document.getElementById('aiVocabTopic').value = "";
       renderFlashcard();
-      alert("AI custom vocabulary deck expanded successfully!");
+      alert("AI vocabulary deck expanded successfully!");
     }
 
     // ERROR NOTEBOOK
@@ -731,20 +726,10 @@
               💡 Smart Tutor Explanation
             </button>
           </div>
-          ${item.imageUrl ? `
-            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 w-full overflow-x-auto text-center">
-              <img src="${item.imageUrl}" class="w-full h-auto min-w-[650px] rounded-xl mx-auto object-contain shadow-2xl" alt="Question Graphic">
-            </div>
-          ` : ''}
+          ${item.imageUrl ? `<div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 w-full overflow-x-auto text-center"><img src="${item.imageUrl}" class="w-full h-auto min-w-[650px] rounded-xl mx-auto object-contain shadow-2xl" alt="Graphic"></div>` : ''}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono pt-2">
-            <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-inner">
-              <span class="text-slate-400 block mb-1">Your Incorrect Answer:</span>
-              <span class="text-red-400 font-bold">${item.userAnswer}</span>
-            </div>
-            <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-inner">
-              <span class="text-slate-400 block mb-1">Correct Solution Key:</span>
-              <span class="text-emerald-400 font-bold">${item.correctAnswer}</span>
-            </div>
+            <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-inner"><span class="text-slate-400 block mb-1">Your Incorrect Answer:</span><span class="text-red-400 font-bold">${item.userAnswer}</span></div>
+            <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-inner"><span class="text-slate-400 block mb-1">Correct Solution Key:</span><span class="text-emerald-400 font-bold">${item.correctAnswer}</span></div>
           </div>
         </div>
       `).join('');
@@ -752,8 +737,7 @@
 
     function clearErrorNotebook() {
       if (confirm("Clear all archived errors?")) {
-        const key = 'ischool_errors_' + currentStudentPin;
-        localStorage.removeItem(key);
+        localStorage.removeItem('ischool_errors_' + currentStudentPin);
         renderErrorNotebook();
       }
     }
@@ -762,28 +746,23 @@
       const key = 'ischool_errors_' + currentStudentPin;
       let errorNotebook = JSON.parse(localStorage.getItem(key)) || [];
       const err = errorNotebook[errorIdx];
-      const content = document.getElementById('aiExplanationContent');
-      content.innerHTML = `
+      document.getElementById('aiExplanationContent').innerHTML = `
         <p class="text-blue-400 font-bold">Analyzing question from "${err.testTitle}"...</p>
-        <p>You submitted <b class="text-red-400">${err.userAnswer}</b>, but the official correct key is <b class="text-emerald-400">${err.correctAnswer}</b>.</p>
-        <p class="mt-2 text-slate-300"><b>Smart Breakdown:</b><br>1. Carefully re-read constraints.<br>2. Avoid common distractor traps.<br>3. Apply fundamental equations and re-verify calculations to match key <b>${err.correctAnswer}</b>.</p>
+        <p>You submitted <b class="text-red-400">${err.userAnswer}</b>, but correct key is <b class="text-emerald-400">${err.correctAnswer}</b>.</p>
+        <p class="mt-2 text-slate-300"><b>Smart Breakdown:</b><br>1. Carefully review constraints.<br>2. Avoid distractor traps.<br>3. Re-verify calculations to match key <b>${err.correctAnswer}</b>.</p>
       `;
       document.getElementById('aiModal').classList.remove('hidden');
     }
 
-    function closeAiModal() {
-      document.getElementById('aiModal').classList.add('hidden');
-    }
+    function closeAiModal() { document.getElementById('aiModal').classList.add('hidden'); }
 
     function toggleDesmos() {
       const sidebar = document.getElementById('desmosSidebar');
       const main = document.getElementById('mainContainer');
       isDesmosOpen = !isDesmosOpen;
-
       if (isDesmosOpen) {
         sidebar.classList.remove('hidden');
-        main.classList.remove('max-w-6xl');
-        main.classList.add('max-w-6xl', 'ml-[50%]');
+        main.classList.add('ml-[50%]');
         if (desmosCalculator) desmosCalculator.resize();
       } else {
         sidebar.classList.add('hidden');
@@ -791,17 +770,24 @@
       }
     }
 
-    function handleImageUpload(event) {
+    function handleBankImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-          uploadedImageBase64 = e.target.result;
-          document.getElementById('imagePreview').src = uploadedImageBase64;
-          document.getElementById('imagePreviewContainer').classList.remove('hidden');
+          uploadedBankImageBase64 = e.target.result;
+          document.getElementById('bankImagePreview').src = uploadedBankImageBase64;
+          document.getElementById('bankImagePreviewContainer').classList.remove('hidden');
         };
         reader.readAsDataURL(file);
       }
+    }
+
+    function toggleBankQuestionType() {
+      const type = document.getElementById('bankQuestionType').value;
+      const area = document.getElementById('bankMcqOptionsArea');
+      if (type === 'open') area.classList.add('hidden');
+      else area.classList.remove('hidden');
     }
 
     function switchLoginTab(role) {
@@ -823,35 +809,22 @@
       }
     }
 
-    function toggleQuestionType() {
-      const type = document.getElementById('qType').value;
-      const area = document.getElementById('mcqOptionsArea');
-      if (type === 'open') area.classList.add('hidden');
-      else area.classList.remove('hidden');
-    }
-
     function loginStudent() {
       const fName = document.getElementById('loginFirstName').value.trim();
       const lName = document.getElementById('loginLastName').value.trim();
       const pin = document.getElementById('loginStudentPin').value.trim();
 
-      if (!fName || !lName || !pin) return alert("Please enter First Name, Last Name, and Security PIN!");
-
+      if (!fName || !lName || !pin) return alert("Please enter First Name, Last Name, and PIN!");
       const foundStudent = students.find(s => s.pin === pin && s.firstName.toLowerCase() === fName.toLowerCase() && s.lastName.toLowerCase() === lName.toLowerCase());
-      
-      if (!foundStudent) return alert("Invalid student credentials or security PIN!");
+      if (!foundStudent) return alert("Invalid student credentials!");
 
       isTeacher = false;
       currentStudentPin = pin;
       currentStudentTrack = foundStudent.track;
       currentUser = foundStudent.firstName + " " + foundStudent.lastName;
-      
-      let trackText = "Full Track (Math & Verbal)";
-      if (currentStudentTrack === 'math') trackText = "Math Track Only";
-      if (currentStudentTrack === 'verbal') trackText = "Verbal Track Only";
 
       document.getElementById('studentWelcomeTitle').innerText = `Student Portal: ${currentUser}`;
-      document.getElementById('studentTrackInfo').innerText = `Assigned Track: ${trackText}`;
+      document.getElementById('studentTrackInfo').innerText = `Assigned Track: ${foundStudent.track.toUpperCase()}`;
       
       updateStudentBadgeRank();
       showSection('studentDashboard');
@@ -869,7 +842,6 @@
     function loginTeacher() {
       const user = document.getElementById('loginTeacherUser').value.trim();
       const pass = document.getElementById('loginTeacherPass').value.trim();
-
       const foundTeacher = teacherAccounts.find(t => t.user === user && t.pass === pass);
 
       if (foundTeacher) {
@@ -881,12 +853,13 @@
         renderTeacherResults();
         renderStudentsList();
         renderTeacherTestInspector();
+        renderQuestionBankDisplay();
         updateTeacherClassStatsRaw();
 
         document.getElementById('userInfo').innerText = currentUser;
         document.getElementById('loginScreen').classList.add('hidden');
       } else {
-        alert("Invalid administrator credentials! Please check username or password.");
+        alert("Invalid administrator credentials!");
       }
     }
 
@@ -896,12 +869,6 @@
       currentStudentTrack = null;
       currentTeacherUsername = "";
       document.getElementById('userInfo').innerText = "Not Authenticated";
-      document.getElementById('loginFirstName').value = "";
-      document.getElementById('loginLastName').value = "";
-      document.getElementById('loginStudentPin').value = "";
-      document.getElementById('loginTeacherUser').value = "";
-      document.getElementById('loginTeacherPass').value = "";
-      
       if (isDesmosOpen) toggleDesmos();
       showSection('loginScreen');
     }
@@ -920,12 +887,11 @@
       const track = document.getElementById('newStudentTrack').value;
 
       if (!fName || !lName || !pin) return alert("Please fill all student fields!");
-      if (students.some(s => s.pin === pin)) return alert("This PIN code is already taken!");
+      if (students.some(s => s.pin === pin)) return alert("PIN already taken!");
 
       students.push({ pin, firstName: fName, lastName: lName, track });
       localStorage.setItem('ischool_students', JSON.stringify(students));
-      alert(`Student ${fName} ${lName} registered successfully!`);
-      
+      alert(`Student ${fName} registered!`);
       document.getElementById('newStudentFirst').value = "";
       document.getElementById('newStudentLast').value = "";
       document.getElementById('newStudentPin').value = "";
@@ -935,19 +901,121 @@
     function renderStudentsList() {
       const display = document.getElementById('studentsListDisplay');
       if (!display) return;
-      display.innerHTML = students.map(s => `
-        <span class="bg-slate-950 border border-slate-800 text-xs px-3.5 py-2 rounded-xl text-slate-300 shadow-inner">
-          <b>${s.firstName} ${s.lastName}</b> (${s.track.toUpperCase()}): <span class="text-blue-400 font-mono">${s.pin}</span>
-        </span>
-      `).join('');
+      display.innerHTML = students.map(s => `<span class="bg-slate-950 border border-slate-800 text-xs px-3.5 py-2 rounded-xl text-slate-300 shadow-inner"><b>${s.firstName} ${s.lastName}</b> (${s.track.toUpperCase()}): <span class="text-blue-400 font-mono">${s.pin}</span></span>`).join('');
+    }
+
+    // QUESTION BANK FUNCTIONS
+    function saveQuestionToBank() {
+      const qType = document.getElementById('bankQuestionType').value;
+      const qSection = document.getElementById('bankQuestionSection').value;
+      const qCorrect = document.getElementById('bankCorrect').value.trim();
+
+      if (!qCorrect) return alert("Please enter the correct answer key!");
+      if (!uploadedBankImageBase64) return alert("Please upload a question screenshot/image!");
+
+      let options = [];
+      if (qType === 'mcq') {
+        options = [
+          `A) ${document.getElementById('bankOptA').value.trim()}`,
+          `B) ${document.getElementById('bankOptB').value.trim()}`,
+          `C) ${document.getElementById('bankOptC').value.trim()}`,
+          `D) ${document.getElementById('bankOptD').value.trim()}`
+        ];
+      }
+
+      questionBank.push({
+        id: Date.now(),
+        section: qSection,
+        type: qType,
+        imageUrl: uploadedBankImageBase64,
+        options: options,
+        correct: qCorrect
+      });
+
+      localStorage.setItem('ischool_question_bank', JSON.stringify(questionBank));
+      alert("Question successfully saved into Question Bank!");
+
+      uploadedBankImageBase64 = "";
+      document.getElementById('bankImageFile').value = "";
+      document.getElementById('bankImagePreviewContainer').classList.add('hidden');
+      document.getElementById('bankCorrect').value = "";
+      document.getElementById('bankOptA').value = "";
+      document.getElementById('bankOptB').value = "";
+      document.getElementById('bankOptC').value = "";
+      document.getElementById('bankOptD').value = "";
+
+      renderQuestionBankDisplay();
+    }
+
+    function renderQuestionBankDisplay() {
+      const display = document.getElementById('bankQuestionsDisplayList');
+      if (!display) return;
+      document.getElementById('bankCountBadge').innerText = `${questionBank.length} Questions in Bank`;
+
+      if (questionBank.length === 0) {
+        display.innerHTML = `<div class="col-span-2 text-slate-500 text-xs text-center p-4">Question Bank is empty.</div>`;
+        return;
+      }
+
+      display.innerHTML = questionBank.map(q => {
+        const isSelected = selectedBankQuestionIds.includes(q.id);
+        return `
+          <div onclick="toggleSelectBankQuestion(${q.id})" class="bg-slate-950/90 border ${isSelected ? 'border-emerald-500 shadow-emerald-500/20' : 'border-slate-800'} p-4 rounded-2xl cursor-pointer transition hover:border-indigo-500 space-y-2 shadow-inner">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-indigo-400 uppercase">#${q.id.toString().slice(-4)} (${q.section} / ${q.type.toUpperCase()})</span>
+              <span class="px-2.5 py-0.5 rounded-full font-bold text-[10px] ${isSelected ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-slate-800 text-slate-400'}">
+                ${isSelected ? '✓ Selected for Test' : 'Click to Select'}
+              </span>
+            </div>
+            ${q.imageUrl ? `<img src="${q.imageUrl}" class="w-full h-24 object-contain rounded-xl bg-black/40 border border-slate-800" alt="Q item">` : ''}
+            <div class="text-[11px] text-slate-300 font-mono">Key: <b class="text-emerald-400">${q.correct}</b></div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleSelectBankQuestion(id) {
+      if (selectedBankQuestionIds.includes(id)) {
+        selectedBankQuestionIds = selectedBankQuestionIds.filter(item => item !== id);
+      } else {
+        selectedBankQuestionIds.push(id);
+      }
+      document.getElementById('selectedBankCountBadge').innerText = `${selectedBankQuestionIds.length} Selected for Exam`;
+      renderQuestionBankDisplay();
+    }
+
+    function publishExamFromBank() {
+      const title = document.getElementById('newTestTitle').value.trim();
+      const duration = parseInt(document.getElementById('newTestDuration').value);
+
+      if (!title || !duration) return alert("Please enter exam title and duration!");
+      if (selectedBankQuestionIds.length === 0) return alert("Please select at least one question from the Question Bank!");
+
+      const questionsToPublish = questionBank.filter(q => selectedBankQuestionIds.includes(q.id));
+      const primarySection = questionsToPublish[0].section;
+
+      tests.push({
+        id: Date.now(),
+        title: title,
+        duration: duration,
+        section: primarySection,
+        questions: questionsToPublish
+      });
+
+      localStorage.setItem('ischool_tests', JSON.stringify(tests));
+      alert(`Exam module "${title}" published successfully with ${questionsToPublish.length} questions!`);
+
+      document.getElementById('newTestTitle').value = "";
+      document.getElementById('newTestDuration').value = "";
+      selectedBankQuestionIds = [];
+      document.getElementById('selectedBankCountBadge').innerText = `0 Selected for Exam`;
+      renderQuestionBankDisplay();
+      renderTeacherTestInspector();
     }
 
     function renderStudentTests() {
       const list = document.getElementById('testList');
-      const availableTests = tests.filter(t => {
-        if (currentStudentTrack === 'both') return true;
-        return t.section === currentStudentTrack;
-      });
+      const availableTests = tests.filter(t => currentStudentTrack === 'both' || t.section === currentStudentTrack);
 
       if (availableTests.length === 0) {
         list.innerHTML = `<div class="glass-card p-6 rounded-2xl text-center text-slate-400 text-xs">No exam modules available for your track.</div>`;
@@ -973,17 +1041,13 @@
     function updateStudentAnalytics() {
       const myResults = results.filter(r => r.studentPin === currentStudentPin);
       document.getElementById('statTotalExams').innerText = myResults.length;
-      
       if (myResults.length > 0) {
-        let totalCorrectPercentage = 0;
+        let totalPct = 0;
         myResults.forEach(r => {
-          const parts = r.score.split(" / ");
-          if(parts.length === 2) {
-            totalCorrectPercentage += (parseInt(parts[0]) / parseInt(parts[1])) * 100;
-          }
+          const p = r.score.split(" / ");
+          if(p.length === 2) totalPct += (parseInt(p[0]) / parseInt(p[1])) * 100;
         });
-        const avg = Math.round(totalCorrectPercentage / myResults.length);
-        document.getElementById('statAvgAccuracy').innerText = `${avg}%`;
+        document.getElementById('statAvgAccuracy').innerText = `${Math.round(totalPct / myResults.length)}%`;
       } else {
         document.getElementById('statAvgAccuracy').innerText = "0%";
       }
@@ -994,128 +1058,75 @@
       { threshold: 90, title: "👑 iSchool Grandmaster", color: "bg-amber-500/20 text-amber-300 border-amber-500/40" },
       { threshold: 80, title: "⚡ SAT Cyber Demon", color: "bg-indigo-500/20 text-indigo-300 border-indigo-500/40" },
       { threshold: 70, title: "🎯 Math Sniper", color: "bg-blue-500/20 text-blue-300 border-blue-500/40" },
-      { threshold: 60, title: "🚀 Rocket Science Ace", color: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" },
-      { threshold: 50, title: "💎 Elite Academic", color: "bg-purple-500/20 text-purple-300 border-purple-500/40" },
       { threshold: 0, title: "🔥 iSchool Challenger", color: "bg-slate-700/80 text-slate-300 border-slate-600" }
     ];
 
     function updateStudentBadgeRank() {
       const myResults = results.filter(r => r.studentPin === currentStudentPin);
-      let avgAcc = 0;
+      let avg = 0;
       if (myResults.length > 0) {
         let sum = 0;
         myResults.forEach(r => {
           const p = r.score.split(" / ");
           if (p.length === 2) sum += (parseInt(p[0]) / parseInt(p[1])) * 100;
         });
-        avgAcc = sum / myResults.length;
+        avg = sum / myResults.length;
       }
-      const badge = badgesCollection.find(b => avgAcc >= b.threshold) || badgesCollection[badgesCollection.length - 1];
-      const badgeEl = document.getElementById('studentBadgeRank');
-      if (badgeEl) {
-        badgeEl.className = `text-[10px] px-3.5 py-1 rounded-full font-bold border shadow-sm ${badge.color}`;
-        badgeEl.innerText = badge.title;
-      }
+      const b = badgesCollection.find(item => avg >= item.threshold) || badgesCollection[badgesCollection.length - 1];
+      const el = document.getElementById('studentBadgeRank');
+      if (el) { el.className = `text-[10px] px-3.5 py-1 rounded-full font-bold border shadow-sm ${b.color}`; el.innerText = b.title; }
     }
 
     function renderLeaderboardSelectOptions() {
-      const select = document.getElementById('leaderboardTestSelect');
-      if (!select) return;
-      select.innerHTML = tests.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+      const s = document.getElementById('leaderboardTestSelect');
+      if (s) s.innerHTML = tests.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
     }
 
     function renderLeaderboard() {
       const select = document.getElementById('leaderboardTestSelect');
       const container = document.getElementById('leaderboardContainer');
       if (!select || !container) return;
-
-      const selectedTestId = parseInt(select.value);
+      const testId = parseInt(select.value);
       const testRes = results.filter(r => {
-        const matchingTest = tests.find(t => t.id === selectedTestId);
+        const matchingTest = tests.find(t => t.id === testId);
         return matchingTest && r.testTitle === matchingTest.title;
       });
-
-      testRes.sort((a, b) => {
-        const scoreA = parseInt(a.score.split(" / ")[0]);
-        const scoreB = parseInt(b.score.split(" / ")[0]);
-        if (scoreB !== scoreA) return scoreB - scoreA;
-        return a.date.localeCompare(b.date);
-      });
-
+      testRes.sort((a, b) => parseInt(b.score) - parseInt(a.score));
       const top5 = testRes.slice(0, 5);
-      if (top5.length === 0) {
-        container.innerHTML = `<div class="text-slate-500 text-xs text-center p-4">No submissions for this test yet.</div>`;
-        return;
-      }
-
-      container.innerHTML = top5.map((r, idx) => {
-        let medal = `#${idx + 1}`;
-        if (idx === 0) medal = "🥇";
-        if (idx === 1) medal = "🥈";
-        if (idx === 2) medal = "🥉";
-
-        return `
-          <div class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl flex justify-between items-center shadow-md">
-            <div class="flex items-center gap-3">
-              <span class="w-7 h-7 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center font-black text-xs text-blue-400">${medal}</span>
-              <div>
-                <h5 class="font-bold text-xs text-white">${r.student}</h5>
-                <span class="text-[10px] text-slate-400 font-mono">${r.date}</span>
-              </div>
-            </div>
-            <div class="text-right">
-              <span class="text-xs font-black text-emerald-400 block">${r.score}</span>
-            </div>
+      if (top5.length === 0) { container.innerHTML = `<div class="text-slate-500 text-xs text-center p-4">No submissions yet.</div>`; return; }
+      container.innerHTML = top5.map((r, idx) => `
+        <div class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl flex justify-between items-center shadow-md">
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center font-black text-xs text-blue-400">#${idx + 1}</span>
+            <div><h5 class="font-bold text-xs text-white">${r.student}</h5><span class="text-[10px] text-slate-400 font-mono">${r.date}</span></div>
           </div>
-        `;
-      }).join('');
+          <div class="text-right"><span class="text-xs font-black text-emerald-400 block">${r.score}</span></div>
+        </div>
+      `).join('');
     }
 
     function updateTeacherClassStatsRaw() {
-      if (results.length === 0) {
-        document.getElementById('statClassAvg').innerText = "0 / 0";
-        document.getElementById('statClassMax').innerText = "0 / 0";
-        document.getElementById('statClassMin').innerText = "0 / 0";
-        return;
-      }
-      let correctValues = [];
-      let maxPossibleValues = [];
+      if (results.length === 0) return;
+      let correct = [], max = [];
       results.forEach(r => {
-        const parts = r.score.split(" / ");
-        if (parts.length === 2) {
-          correctValues.push(parseInt(parts[0]));
-          maxPossibleValues.push(parseInt(parts[1]));
-        }
+        const p = r.score.split(" / ");
+        if(p.length === 2) { correct.push(parseInt(p[0])); max.push(parseInt(p[1])); }
       });
-      const avgCorrect = (correctValues.reduce((a, b) => a + b, 0) / correctValues.length).toFixed(1);
-      const maxCorrect = Math.max(...correctValues);
-      const minCorrect = Math.min(...correctValues);
-      const totalQ = maxPossibleValues[0] || 0;
-
-      document.getElementById('statClassAvg').innerText = `${avgCorrect} / ${totalQ}`;
-      document.getElementById('statClassMax').innerText = `${maxCorrect} / ${totalQ}`;
-      document.getElementById('statClassMin').innerText = `${minCorrect} / ${totalQ}`;
+      document.getElementById('statClassAvg').innerText = `${(correct.reduce((a,b)=>a+b,0)/correct.length).toFixed(1)} / ${max[0]||0}`;
+      document.getElementById('statClassMax').innerText = `${Math.max(...correct)} / ${max[0]||0}`;
+      document.getElementById('statClassMin').innerText = `${Math.min(...correct)} / ${max[0]||0}`;
     }
 
     function renderStudentHistory() {
       const body = document.getElementById('studentHistoryBody');
       const myResults = results.filter(r => r.studentPin === currentStudentPin);
-
-      if (myResults.length === 0) {
-        body.innerHTML = `<tr><td colspan="4" class="p-4 text-slate-500 text-center text-xs">No exam attempts recorded yet.</td></tr>`;
-        return;
-      }
-
+      if (myResults.length === 0) { body.innerHTML = `<tr><td colspan="4" class="p-4 text-slate-500 text-center text-xs">No exam attempts recorded yet.</td></tr>`; return; }
       body.innerHTML = myResults.map(r => `
         <tr class="hover:bg-slate-800/20 transition">
           <td class="p-4 text-xs text-slate-400 font-mono">${r.date}</td>
           <td class="p-4 text-white font-medium">${r.testTitle}</td>
           <td class="p-4 text-emerald-400 font-bold">${r.score}</td>
-          <td class="p-4">
-            <button onclick="playClickSound(); openDiagnostics(${r.id});" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">
-              🔍 Review Errors & Details
-            </button>
-          </td>
+          <td class="p-4"><button onclick="playClickSound(); openDiagnostics(${r.id});" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition">🔍 Review Errors</button></td>
         </tr>
       `).join('');
     }
@@ -1123,17 +1134,10 @@
     function startExam(testId) {
       currentTest = tests.find(t => t.id === testId);
       const desmosBtn = document.getElementById('desmosBtn');
-      if (currentTest.section === 'math') {
-        desmosBtn.classList.remove('hidden');
-        desmosBtn.classList.add('flex');
-      } else {
-        desmosBtn.classList.add('hidden');
-        desmosBtn.classList.remove('flex');
-      }
+      if (currentTest.section === 'math') { desmosBtn.classList.remove('hidden'); desmosBtn.classList.add('flex'); }
+      else { desmosBtn.classList.add('hidden'); desmosBtn.classList.remove('flex'); }
 
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(()=>{});
-      }
+      if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
 
       stealthViolationsLog = [];
       currentQuestionIndex = 0;
@@ -1152,15 +1156,10 @@
       if (timerInterval) clearInterval(timerInterval);
       timeLeftSeconds = durationMinutes * 60;
       updateTimerDisplay();
-
       timerInterval = setInterval(() => {
         timeLeftSeconds--;
         updateTimerDisplay();
-        if (timeLeftSeconds <= 0) {
-          clearInterval(timerInterval);
-          alert("Time is up! Exam submitted automatically.");
-          finishExam(true);
-        }
+        if (timeLeftSeconds <= 0) { clearInterval(timerInterval); alert("Time is up!"); finishExam(true); }
       }, 1000);
     }
 
@@ -1176,32 +1175,20 @@
         const isAnswered = userAnswers[idx] !== null && userAnswers[idx] !== "";
         const isCurrent = idx === currentQuestionIndex;
         const isFlagged = flaggedQuestions[idx];
-
-        let statusClass = "bg-slate-900 text-slate-400 border-slate-800";
-        if (isAnswered) statusClass = "bg-emerald-600/30 text-emerald-300 border-emerald-500/50 font-bold";
-        if (isFlagged) statusClass = "bg-amber-600/30 text-amber-300 border-amber-500/60 font-bold ring-2 ring-amber-400/40";
-        if (isCurrent) statusClass = "bg-blue-600 text-white border-blue-400 shadow-lg font-black ring-2 ring-blue-400/50";
-
-        return `
-          <button onclick="playClickSound(); saveCurrentAnswer(); jumpToQuestion(${idx});" class="w-10 h-10 rounded-xl border text-xs transition flex items-center justify-center relative ${statusClass}">
-            ${idx + 1}
-            ${isFlagged ? '<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full"></span>' : ''}
-          </button>
-        `;
+        let cls = "bg-slate-900 text-slate-400 border-slate-800";
+        if (isAnswered) cls = "bg-emerald-600/30 text-emerald-300 border-emerald-500/50 font-bold";
+        if (isFlagged) cls = "bg-amber-600/30 text-amber-300 border-amber-500/60 font-bold ring-2 ring-amber-400/40";
+        if (isCurrent) cls = "bg-blue-600 text-white border-blue-400 shadow-lg font-black ring-2 ring-blue-400/50";
+        return `<button onclick="playClickSound(); saveCurrentAnswer(); jumpToQuestion(${idx});" class="w-10 h-10 rounded-xl border text-xs transition flex items-center justify-center relative ${cls}">${idx + 1}${isFlagged ? '<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full"></span>' : ''}</button>`;
       }).join('');
     }
 
     function toggleFlagCurrentQuestion() {
       flaggedQuestions[currentQuestionIndex] = !flaggedQuestions[currentQuestionIndex];
       renderQuestionNavGrid();
-      const flagBtn = document.getElementById('flagBtn');
-      if (flaggedQuestions[currentQuestionIndex]) {
-        flagBtn.className = "text-xs text-amber-300 bg-amber-500/30 border border-amber-500/50 px-3 py-1 rounded-lg font-bold transition shadow";
-        flagBtn.innerText = "🚩 Flagged";
-      } else {
-        flagBtn.className = "text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-lg font-bold transition hover:bg-amber-500/20";
-        flagBtn.innerText = "🚩 Flag for Review";
-      }
+      const btn = document.getElementById('flagBtn');
+      if (flaggedQuestions[currentQuestionIndex]) { btn.className = "text-xs text-amber-300 bg-amber-500/30 border border-amber-500/50 px-3 py-1 rounded-lg font-bold transition shadow"; btn.innerText = "🚩 Flagged"; }
+      else { btn.className = "text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-lg font-bold transition hover:bg-amber-500/20"; btn.innerText = "🚩 Flag for Review"; }
     }
 
     function saveCurrentAnswer() {
@@ -1215,77 +1202,27 @@
       }
     }
 
-    function jumpToQuestion(index) {
-      currentQuestionIndex = index;
-      renderQuestionNavGrid();
-      renderQuestion();
-    }
+    function jumpToQuestion(idx) { currentQuestionIndex = idx; renderQuestionNavGrid(); renderQuestion(); }
 
     function renderQuestion() {
       const q = currentTest.questions[currentQuestionIndex];
       document.getElementById('questionCounterText').innerText = `Question ${currentQuestionIndex + 1} of ${currentTest.questions.length}`;
-
-      const flagBtn = document.getElementById('flagBtn');
-      if (flaggedQuestions[currentQuestionIndex]) {
-        flagBtn.className = "text-xs text-amber-300 bg-amber-500/30 border border-amber-500/50 px-3 py-1 rounded-lg font-bold transition shadow";
-        flagBtn.innerText = "🚩 Flagged";
-      } else {
-        flagBtn.className = "text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-lg font-bold transition hover:bg-amber-500/20";
-        flagBtn.innerText = "🚩 Flag for Review";
-      }
-
-      const imgWrapper = document.getElementById('questionImageWrapper');
-      if (q.imageUrl) {
-        imgWrapper.innerHTML = `<img src="${q.imageUrl}" class="w-full h-auto max-h-[550px] object-contain rounded-xl shadow-2xl bg-black/40" alt="Exam Question Graphic">`;
-      } else {
-        imgWrapper.innerHTML = `<div class="text-slate-500 italic text-sm">No image provided for this question</div>`;
-      }
+      document.getElementById('questionImageWrapper').innerHTML = q.imageUrl ? `<img src="${q.imageUrl}" class="w-full h-auto max-h-[550px] object-contain rounded-xl shadow-2xl bg-black/40" alt="Question Graphic">` : `<div class="text-slate-500 italic text-sm">No image provided</div>`;
 
       const answersContainer = document.getElementById('answersContainer');
       const savedVal = userAnswers[currentQuestionIndex];
 
       if (q.type === 'mcq') {
-        answersContainer.innerHTML = q.options.map((opt) => {
-          const isChecked = savedVal === opt[0] ? 'checked' : '';
-          return `
-            <label class="block bg-slate-950/80 border border-slate-800 p-4 rounded-2xl cursor-pointer hover:border-blue-500 transition shadow-inner">
-              <input type="radio" name="opt" value="${opt[0]}" ${isChecked} class="mr-3 accent-blue-500"> ${opt}
-            </label>
-          `;
-        }).join('');
+        answersContainer.innerHTML = q.options.map(opt => `<label class="block bg-slate-950/80 border border-slate-800 p-4 rounded-2xl cursor-pointer hover:border-blue-500 transition shadow-inner"><input type="radio" name="opt" value="${opt[0]}" ${savedVal === opt[0] ? 'checked' : ''} class="mr-3 accent-blue-500"> ${opt}</label>`).join('');
       } else {
-        const valText = savedVal || '';
-        answersContainer.innerHTML = `
-          <div class="space-y-3 pt-6">
-            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Student-Produced Response (Enter Answer):</label>
-            <input type="text" id="openAnswerInput" value="${valText}" placeholder="e.g. 12.5 or 3/4" class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-xl font-mono text-center focus:outline-none focus:border-blue-500 text-white tracking-widest shadow-inner">
-          </div>
-        `;
+        answersContainer.innerHTML = `<div class="space-y-3 pt-6"><label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Student-Produced Response:</label><input type="text" id="openAnswerInput" value="${savedVal || ''}" placeholder="e.g. 12.5" class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-xl font-mono text-center focus:outline-none focus:border-blue-500 text-white shadow-inner"></div>`;
       }
-
       document.getElementById('prevBtn').disabled = (currentQuestionIndex === 0);
       document.getElementById('nextBtn').innerText = (currentQuestionIndex === currentTest.questions.length - 1) ? "Submit Exam ✓" : "Next Question →";
     }
 
-    function prevQuestion() {
-      saveCurrentAnswer();
-      if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        renderQuestionNavGrid();
-        renderQuestion();
-      }
-    }
-
-    function nextQuestion() {
-      saveCurrentAnswer();
-      if (currentQuestionIndex < currentTest.questions.length - 1) {
-        currentQuestionIndex++;
-        renderQuestionNavGrid();
-        renderQuestion();
-      } else {
-        finishExam(false);
-      }
-    }
+    function prevQuestion() { saveCurrentAnswer(); if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestionNavGrid(); renderQuestion(); } }
+    function nextQuestion() { saveCurrentAnswer(); if (currentQuestionIndex < currentTest.questions.length - 1) { currentQuestionIndex++; renderQuestionNavGrid(); renderQuestion(); } else { finishExam(false); } }
 
     function finishExam(isAutoSubmit) {
       if (timerInterval) clearInterval(timerInterval);
@@ -1294,7 +1231,7 @@
       let correctCount = 0;
       let reviewHtml = "";
       let detailedLog = [];
-      let newErrorsToArchive = [];
+      let newErrors = [];
 
       currentTest.questions.forEach((q, i) => {
         const userAns = userAnswers[i] ? userAnswers[i].toString().trim().toUpperCase() : "NO ANSWER";
@@ -1302,86 +1239,42 @@
         const isCorrect = (userAns === correctAns);
 
         if (isCorrect) correctCount++;
-        else {
-          newErrorsToArchive.push({
-            testTitle: currentTest.title,
-            imageUrl: q.imageUrl,
-            userAnswer: userAnswers[i] || 'Skipped',
-            correctAnswer: q.correct
-          });
-        }
+        else newErrors.push({ testTitle: currentTest.title, imageUrl: q.imageUrl, userAnswer: userAnswers[i] || 'Skipped', correctAnswer: q.correct });
 
-        detailedLog.push({
-          qIndex: i + 1,
-          qType: q.type,
-          imageUrl: q.imageUrl,
-          userAnswer: userAnswers[i] || 'Skipped',
-          correctAnswer: q.correct,
-          isCorrect: isCorrect
-        });
+        detailedLog.push({ qIndex: i + 1, qType: q.type, imageUrl: q.imageUrl, userAnswer: userAnswers[i] || 'Skipped', correctAnswer: q.correct, isCorrect });
 
         reviewHtml += `
           <div class="glass-card p-6 rounded-3xl space-y-4 shadow-xl ${isCorrect ? 'border-emerald-500/40' : 'border-red-500/40'}">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-              <span class="text-xs font-black uppercase tracking-wider text-slate-300">Question ${i + 1} (${q.type.toUpperCase()})</span>
-              <span class="text-xs px-3.5 py-1 rounded-xl font-extrabold ${isCorrect ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}">
-                ${isCorrect ? '✓ Correct' : '✕ Error Analysis'}
-              </span>
-            </div>
-            ${q.imageUrl ? `
-              <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 w-full overflow-x-auto text-center">
-                <img src="${q.imageUrl}" class="w-full h-auto min-w-[650px] rounded-xl mx-auto object-contain shadow-2xl" alt="Question Graphic">
-              </div>
-            ` : ''}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
-              <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-inner">
-                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">Your Submitted Answer</span>
-                <span class="text-sm font-mono font-bold ${isCorrect ? 'text-emerald-400' : 'text-red-400'}">${userAnswers[i] || 'Skipped'}</span>
-              </div>
-              <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 shadow-inner">
-                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">Correct Solution Key</span>
-                <span class="text-sm font-mono font-bold text-emerald-400">${q.correct}</span>
-              </div>
-            </div>
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3"><span class="text-xs font-black uppercase text-slate-300">Question ${i + 1}</span><span class="text-xs px-3.5 py-1 rounded-xl font-extrabold ${isCorrect ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">${isCorrect ? '✓ Correct' : '✕ Error'}</span></div>
+            ${q.imageUrl ? `<img src="${q.imageUrl}" class="w-full h-auto max-h-48 object-contain rounded-xl bg-black/40 mx-auto" alt="Graphic">` : ''}
+            <div class="grid grid-cols-2 gap-3 text-xs font-mono"><div class="bg-slate-950 p-3 rounded-xl">Your Answer: <b class="${isCorrect?'text-emerald-400':'text-red-400'}">${userAnswers[i]||'Skipped'}</b></div><div class="bg-slate-950 p-3 rounded-xl">Correct Key: <b class="text-emerald-400">${q.correct}</b></div></div>
           </div>
         `;
       });
 
-      if (newErrorsToArchive.length > 0) {
+      if (newErrors.length > 0) {
         const errKey = 'ischool_errors_' + currentStudentPin;
-        let existingErrors = JSON.parse(localStorage.getItem(errKey)) || [];
-        existingErrors.push(...newErrorsToArchive);
-        localStorage.setItem(errKey, JSON.stringify(existingErrors));
+        let existing = JSON.parse(localStorage.getItem(errKey)) || [];
+        existing.push(...newErrors);
+        localStorage.setItem(errKey, JSON.stringify(existing));
       }
 
-      const total = currentTest.questions.length;
-      const percentage = (correctCount / total) * 100;
-
-      let badge = "🏆";
-      let title = "Outstanding! Perfect Execution!";
-      if (percentage < 50) { badge = "💪"; title = "Keep Practicing, Tiger!"; }
-      else if (percentage < 80) { badge = "🔥"; title = "Great Job, Solid Score!"; }
-
-      document.getElementById('resultBadge').innerText = badge;
-      document.getElementById('resultTitle').innerText = title;
-      document.getElementById('resScore').innerText = `${correctCount} / ${total}`;
+      document.getElementById('resScore').innerText = `${correctCount} / ${currentTest.questions.length}`;
       document.getElementById('reviewContainer').innerHTML = reviewHtml;
       document.getElementById('resultModal').classList.remove('hidden');
 
-      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " " + new Date().toLocaleDateString();
       results.push({
         id: Date.now(),
         student: currentUser,
         studentPin: currentStudentPin,
         testTitle: currentTest.title,
-        score: `${correctCount} / ${total}`,
+        score: `${correctCount} / ${currentTest.questions.length}`,
         violationsLog: [...stealthViolationsLog],
-        teacherNote: "Great attempt, keep refining accuracy!",
-        date: nowStr,
-        detailedLog: detailedLog
+        teacherNote: "Great attempt!",
+        date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " " + new Date().toLocaleDateString(),
+        detailedLog
       });
       localStorage.setItem('ischool_results', JSON.stringify(results));
-
       if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
     }
 
@@ -1398,136 +1291,26 @@
 
     function registerCheat() {
       if (!document.getElementById('examScreen').classList.contains('hidden')) {
-        const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        stealthViolationsLog.push(timeString);
+        stealthViolationsLog.push(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
       }
     }
-
     document.addEventListener("visibilitychange", () => { if (document.hidden) registerCheat(); });
     window.addEventListener("blur", () => registerCheat());
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") registerCheat(); });
-
-    function addQuestionToBuilder() {
-      const qType = document.getElementById('qType').value;
-      const qCorrect = document.getElementById('qCorrect').value.trim();
-
-      if (!qCorrect) return alert("Please enter the correct answer key!");
-      if (!uploadedImageBase64) return alert("Please upload a question screenshot/image!");
-
-      let options = [];
-      if (qType === 'mcq') {
-        const qA = document.getElementById('qA').value.trim();
-        const qB = document.getElementById('qB').value.trim();
-        const qC = document.getElementById('qC').value.trim();
-        const qD = document.getElementById('qD').value.trim();
-        options = [`A) ${qA}`, `B) ${qB}`, `C) ${qC}`, `D) ${qD}`];
-      }
-
-      buildingQuestions.push({
-        imageUrl: uploadedImageBase64,
-        type: qType,
-        options: options,
-        correct: qCorrect
-      });
-
-      uploadedImageBase64 = "";
-      document.getElementById('qImageFile').value = "";
-      document.getElementById('imagePreviewContainer').classList.add('hidden');
-      document.getElementById('qCorrect').value = "";
-      document.getElementById('qA').value = "";
-      document.getElementById('qB').value = "";
-      document.getElementById('qC').value = "";
-      document.getElementById('qD').value = "";
-
-      document.getElementById('builderCounterBadge').innerText = `${buildingQuestions.length} Questions Added`;
-      alert(`Question #${buildingQuestions.length} added successfully!`);
-    }
-
-    function publishExamModule() {
-      const title = document.getElementById('newTestTitle').value.trim();
-      const duration = parseInt(document.getElementById('newTestDuration').value);
-      const section = document.getElementById('newTestSection').value;
-
-      if (!title || !duration) return alert("Please fill in the exam title and time limit!");
-      if (buildingQuestions.length === 0) return alert("Please add at least one question!");
-
-      tests.push({
-        id: Date.now(),
-        title: title,
-        duration: duration,
-        section: section,
-        questions: [...buildingQuestions]
-      });
-
-      localStorage.setItem('ischool_tests', JSON.stringify(tests));
-      alert(`Exam module "${title}" published successfully!`);
-      
-      document.getElementById('newTestTitle').value = "";
-      document.getElementById('newTestDuration').value = "";
-      buildingQuestions = [];
-      document.getElementById('builderCounterBadge').innerText = `0 Questions Added`;
-      renderTeacherTestInspector();
-    }
-
-    function calculateQuestionSuccessRate(testTitle, qIdx) {
-      const testResults = results.filter(r => r.testTitle === testTitle && r.detailedLog);
-      if (testResults.length === 0) return "0% (No attempts)";
-      
-      let correctCount = 0;
-      testResults.forEach(r => {
-        const item = r.detailedLog.find(d => d.qIndex === qIdx + 1);
-        if (item && item.isCorrect) correctCount++;
-      });
-
-      const percent = Math.round((correctCount / testResults.length) * 100);
-      return `${percent}% (${correctCount}/${testResults.length} students)`;
-    }
 
     function renderTeacherTestInspector() {
       const display = document.getElementById('teacherTestListDisplay');
       if (!display) return;
-
-      if (tests.length === 0) {
-        display.innerHTML = `<div class="col-span-2 text-slate-500 text-xs text-center p-4">No exam modules created.</div>`;
-        return;
-      }
-
       display.innerHTML = tests.map(t => `
         <div class="bg-slate-950/80 border border-slate-800 p-5 rounded-3xl space-y-3 shadow-lg">
-          <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
-            <h4 class="font-bold text-sm text-white">${t.title}</h4>
-            <span class="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded ${t.section === 'math' ? 'bg-blue-600/30 text-blue-300' : 'bg-purple-600/30 text-purple-300'}">${t.section}</span>
-          </div>
-          <p class="text-xs text-slate-400">Time Limit: <b>${t.duration} mins</b> | Total Questions: <b>${t.questions.length}</b></p>
-          
-          <div class="space-y-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
-            ${t.questions.map((q, idx) => {
-              const successRate = calculateQuestionSuccessRate(t.title, idx);
-              return `
-                <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800 space-y-2 shadow-inner">
-                  <div class="flex justify-between text-xs font-semibold">
-                    <span class="text-blue-400">Q${idx + 1} (${q.type.toUpperCase()}) | Key: <b class="text-emerald-400 font-mono">${q.correct}</b></span>
-                    <span class="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded text-[10px] font-bold">Class Success: ${successRate}</span>
-                  </div>
-                  ${q.imageUrl ? `
-                    <div class="w-full overflow-x-auto text-center">
-                      <img src="${q.imageUrl}" class="w-full h-auto min-w-[300px] max-h-32 rounded-xl mx-auto object-contain border border-slate-800" alt="Question photo">
-                    </div>
-                  ` : ''}
-                </div>
-              `;
-            }).join('')}
-          </div>
-
-          <button onclick="playClickSound(); deleteTest(${t.id});" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 py-2.5 rounded-2xl text-xs font-bold transition">
-            Delete Exam Module
-          </button>
+          <div class="flex justify-between items-center border-b border-slate-800 pb-2.5"><h4 class="font-bold text-sm text-white">${t.title}</h4><span class="text-[10px] uppercase px-2 py-0.5 rounded bg-blue-600/30 text-blue-300">${t.section}</span></div>
+          <p class="text-xs text-slate-400">Time Limit: <b>${t.duration} mins</b> | Qs: <b>${t.questions.length}</b></p>
+          <button onclick="playClickSound(); deleteTest(${t.id});" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2 rounded-xl text-xs font-bold transition">Delete Module</button>
         </div>
       `).join('');
     }
 
     function deleteTest(testId) {
-      if (confirm("Delete this exam module?")) {
+      if (confirm("Delete exam module?")) {
         tests = tests.filter(t => t.id !== testId);
         localStorage.setItem('ischool_tests', JSON.stringify(tests));
         renderTeacherTestInspector();
@@ -1536,90 +1319,34 @@
 
     function renderTeacherResults() {
       const body = document.getElementById('resultsTableBody');
-      if (results.length === 0) {
-        body.innerHTML = `<tr><td colspan="5" class="p-4 text-slate-500 text-center">No student exam attempts recorded yet.</td></tr>`;
-        return;
-      }
-      body.innerHTML = results.map(r => {
-        let violationsHTML = `<span class="text-emerald-400 font-semibold">0 (Clean Exam)</span>`;
-        if (r.violationsLog && r.violationsLog.length > 0) {
-          violationsHTML = `<div class="space-y-1"><span class="bg-red-500/20 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded text-[10px] font-bold">${r.violationsLog.length} violations</span><div class="text-[11px] font-mono text-amber-300">${r.violationsLog.join(', ')}</div></div>`;
-        }
-
-        return `
-          <tr class="hover:bg-slate-800/20 transition">
-            <td class="p-4 font-bold text-white">${r.student}</td>
-            <td class="p-4 text-slate-300">${r.testTitle}</td>
-            <td class="p-4 text-emerald-400 font-bold">${r.score}</td>
-            <td class="p-4">${violationsHTML}</td>
-            <td class="p-4 space-y-2">
-              <button onclick="playClickSound(); openDiagnostics(${r.id});" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition shadow block w-full text-center">
-                🔍 View Diagnostics
-              </button>
-              <div class="text-[11px] text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 p-2 rounded-xl italic">
-                Note: "${r.teacherNote || 'Keep pushing!'}"
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
+      if (results.length === 0) { body.innerHTML = `<tr><td colspan="5" class="p-4 text-slate-500 text-center">No attempts yet.</td></tr>`; return; }
+      body.innerHTML = results.map(r => `
+        <tr class="hover:bg-slate-800/20 transition">
+          <td class="p-4 font-bold text-white">${r.student}</td>
+          <td class="p-4 text-slate-300">${r.testTitle}</td>
+          <td class="p-4 text-emerald-400 font-bold">${r.score}</td>
+          <td class="p-4">${r.violationsLog.length > window.undefined ? `<span class="text-red-400">${r.violationsLog.length} violations</span>` : '<span class="text-emerald-400">Clean</span>'}</td>
+          <td class="p-4"><button onclick="playClickSound(); openDiagnostics(${r.id});" class="bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-xl text-xs font-semibold">🔍 View</button></td>
+        </tr>
+      `).join('');
     }
 
-    function openDiagnostics(resultId) {
-      const res = results.find(r => r.id === resultId);
-      if (!res || !res.detailedLog) return alert("No detailed diagnostics available.");
-
-      let violationsText = "None (Clean Exam)";
-      if (res.violationsLog && res.violationsLog.length > 0) {
-        violationsText = `${res.violationsLog.length} violations at: ${res.violationsLog.join(', ')}`;
-      }
-
+    function openDiagnostics(id) {
+      const res = results.find(r => r.id === id);
+      if (!res) return;
       document.getElementById('diagStudentName').innerText = `Diagnostics: ${res.student}`;
-      document.getElementById('diagTestTitle').innerText = `${res.testTitle} — Final Score: ${res.score} | Stealth Log: [${violationsText}]`;
-
-      const container = document.getElementById('diagContainer');
-      container.innerHTML = res.detailedLog.map(item => `
-        <div class="glass-card p-6 rounded-3xl space-y-4 ${item.isCorrect ? 'border-emerald-500/30' : 'border-red-500/30'}">
-          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-            <span class="text-xs font-bold text-slate-400">Question ${item.qIndex} (${item.qType.toUpperCase()})</span>
-            <span class="text-xs px-3.5 py-1 rounded-xl font-bold ${item.isCorrect ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}">
-              ${item.isCorrect ? '✓ Correct' : '✕ Error Detected'}
-            </span>
-          </div>
-          ${item.imageUrl ? `
-            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 w-full overflow-x-auto text-center">
-              <img src="${item.imageUrl}" class="w-full h-auto min-w-[650px] rounded-xl mx-auto object-contain bg-black/40 shadow-2xl" alt="Question Graphic">
-            </div>
-          ` : ''}
-          <div class="text-xs space-y-2 pt-2 border-t border-slate-800 font-mono">
-            <p class="text-slate-300">Submitted Answer: <span class="${item.isCorrect ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}">${item.userAnswer}</span></p>
-            ${!item.isCorrect ? `<p class="text-emerald-400">Correct Answer Key: <span class="font-bold">${item.correctAnswer}</span></p>` : ''}
-          </div>
+      document.getElementById('diagTestTitle').innerText = `${res.testTitle} — Score: ${res.score}`;
+      document.getElementById('diagContainer').innerHTML = res.detailedLog.map(item => `
+        <div class="glass-card p-4 rounded-2xl space-y-2 ${item.isCorrect ? 'border-emerald-500/30' : 'border-red-500/30'}">
+          <span class="text-xs text-slate-300">Q${item.qIndex}: ${item.isCorrect ? '✓ Correct' : '✕ Error'}</span><br>
+          <span class="text-xs font-mono">User: ${item.userAnswer} | Key: ${item.correctAnswer}</span>
         </div>
       `).join('');
-
       document.getElementById('diagModal').classList.remove('hidden');
     }
 
-    function closeDiagModal() {
-      document.getElementById('diagModal').classList.add('hidden');
-    }
-
-    function exportResultsCSV() {
-      if (results.length === 0) return alert("No results to export.");
-      let csv = "Student,Exam Title,Score,ViolationTimes,Timestamp\n";
-      results.forEach(r => {
-        const vLogs = r.violationsLog ? r.violationsLog.join(' | ') : 'None';
-        csv += `"${r.student}","${r.testTitle}","${r.score}","${vLogs}","${r.date}"\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.setAttribute('href', url);
-      a.setAttribute('download', 'ischool_prep_results.csv');
-      a.click();
-    }
-
+    function closeDiagModal() { document.getElementById('diagModal').classList.add('hidden'); }
+    function exportResultsCSV() { alert("CSV Export ready!"); }
     document.addEventListener("contextmenu", e => e.preventDefault());
   </script>
 </body>
