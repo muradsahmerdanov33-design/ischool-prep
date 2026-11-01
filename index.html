@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iSchool.Prep — Enterprise Elite v14.0</title>
+  <title>iSchool.Prep — Enterprise Elite v15.0 Secure Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Official Desmos Calculator API v1.11 -->
   <script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
@@ -18,21 +18,15 @@
     ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.8); }
     .glass-card {
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(15, 23, 42, 0.7);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(59, 130, 246, 0.15);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     }
-    .neon-glow {
-      box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.35);
-    }
-    .neon-glow-indigo {
-      box-shadow: 0 0 50px -10px rgba(99, 102, 241, 0.35);
-    }
-    .card-hover {
-      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .neon-glow { box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.35); }
+    .neon-glow-red { box-shadow: 0 0 50px -10px rgba(239, 68, 68, 0.4); }
+    .card-hover { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
     .card-hover:hover {
       transform: translateY(-4px);
       border-color: rgba(59, 130, 246, 0.5);
@@ -43,7 +37,7 @@
 <body class="text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white pb-16">
 
   <!-- HEADER NAVIGATION -->
-  <header class="backdrop-blur-2xl bg-slate-950/80 border-b border-blue-500/20 sticky top-0 z-40 px-8 py-4 flex justify-between items-center shadow-2xl">
+  <header class="backdrop-blur-2xl bg-slate-950/85 border-b border-blue-500/20 sticky top-0 z-40 px-8 py-4 flex justify-between items-center shadow-2xl">
     <div class="flex items-center gap-3">
       <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/40 text-white font-black text-2xl tracking-tighter">
         i
@@ -51,9 +45,9 @@
       <div>
         <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
           iSchool.<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Prep</span> 
-          <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono font-semibold">ELITE v14.0</span>
+          <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono font-semibold">ELITE v15.0 PRO</span>
         </h1>
-        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Ultimate Academic Intelligence Network</p>
+        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Next-Gen Secure Academic Intelligence & Proctoring</p>
       </div>
     </div>
     <div class="flex items-center gap-4">
@@ -148,7 +142,7 @@
       
       <div class="text-center mb-8">
         <h2 class="text-2xl font-black text-white tracking-tight">iSchool Enterprise Portal</h2>
-        <p class="text-xs text-slate-400 mt-1.5">Authenticate to enter the secure exam network</p>
+        <p class="text-xs text-slate-400 mt-1.5">Secure Authentication Network v15</p>
       </div>
 
       <div class="flex gap-2 mb-6 bg-slate-950/85 p-1.5 rounded-2xl border border-slate-800 shadow-inner">
@@ -339,7 +333,7 @@
             <div id="questionImageWrapper" class="w-full flex items-center justify-center bg-slate-950/90 border border-slate-800 rounded-2xl p-4 shadow-inner min-h-[460px]"></div>
           </div>
           <div class="text-[11px] text-slate-500 italic pt-3 border-t border-slate-800/60 text-center">
-            iSchool Secure High-Resolution Bluebook View
+            iSchool Secure Proctored Bluebook View (Anti-Cheat Active)
           </div>
         </div>
 
@@ -415,7 +409,7 @@
         </div>
       </div>
 
-      <!-- QUESTION BANK MANAGER (NEW!) -->
+      <!-- QUESTION BANK MANAGER -->
       <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-5">
         <div class="flex justify-between items-center border-b border-slate-800/80 pb-4">
           <h3 class="text-xs font-extrabold text-white uppercase tracking-widest flex items-center gap-2">📚 Global Question Bank Repository</h3>
@@ -468,9 +462,11 @@
           </button>
         </div>
 
-        <!-- LIST OF QUESTIONS IN BANK -->
         <div class="space-y-3">
-          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">📦 Available Question Bank Items (Select to Build Exam):</h4>
+          <div class="flex justify-between items-center">
+            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">📦 Available Question Bank Items (Select to Build Exam):</h4>
+            <button onclick="selectAllBankQuestions()" class="text-xs text-blue-400 hover:underline">Select All / Clear</button>
+          </div>
           <div id="bankQuestionsDisplayList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1 custom-scrollbar"></div>
         </div>
       </div>
@@ -492,7 +488,7 @@
         </button>
       </div>
 
-      <!-- QUESTION BANK INSPECTOR & HEATMAP -->
+      <!-- EXAM INSPECTOR & HEATMAP -->
       <div class="glass-card p-7 rounded-[2.5xl] shadow-2xl space-y-4">
         <h3 class="text-xs font-extrabold text-white uppercase tracking-widest">📂 Active Exam Modules & Heatmap Analytics</h3>
         <div id="teacherTestListDisplay" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -508,7 +504,7 @@
                 <th class="p-4 rounded-l-2xl">Student Name</th>
                 <th class="p-4">Exam Title</th>
                 <th class="p-4">Score</th>
-                <th class="p-4">Violation Timestamps (Stealth Log)</th>
+                <th class="p-4">Violation Timestamps (Anti-Cheat)</th>
                 <th class="p-4 rounded-r-2xl">Error Diagnostics & Notes</th>
               </tr>
             </thead>
@@ -566,7 +562,7 @@
     let pomoInterval = null;
     let isPomoRunning = false;
 
-    // MEGA VOCABULARY DECK
+    // VOCABULARY DECK
     const vocabList = [
       { word: "Ephemeral", definition: "Lasting for a very short time; fleeting." },
       { word: "Pragmatic", definition: "Dealing with things sensibly and realistically." },
@@ -582,7 +578,6 @@
     let currentVocabIdx = 0;
     let isVocabFlipped = false;
 
-    // DATABASE: STUDENTS & TESTS
     let students = JSON.parse(localStorage.getItem('ischool_students')) || [
       { pin: "6675", firstName: "Murad", lastName: "Shahmardanov", track: "both" }
     ];
@@ -672,7 +667,6 @@
       }
     }
 
-    // FLASHCARDS & AI
     function renderFlashcard() {
       const card = vocabList[currentVocabIdx];
       document.getElementById('vocabWord').innerText = card.word;
@@ -706,7 +700,6 @@
       alert("AI vocabulary deck expanded successfully!");
     }
 
-    // ERROR NOTEBOOK
     function renderErrorNotebook() {
       const container = document.getElementById('errorNotebookContainer');
       const key = 'ischool_errors_' + currentStudentPin;
@@ -984,6 +977,16 @@
       renderQuestionBankDisplay();
     }
 
+    function selectAllBankQuestions() {
+      if (selectedBankQuestionIds.length === questionBank.length) {
+        selectedBankQuestionIds = [];
+      } else {
+        selectedBankQuestionIds = questionBank.map(q => q.id);
+      }
+      document.getElementById('selectedBankCountBadge').innerText = `${selectedBankQuestionIds.length} Selected for Exam`;
+      renderQuestionBankDisplay();
+    }
+
     function publishExamFromBank() {
       const title = document.getElementById('newTestTitle').value.trim();
       const duration = parseInt(document.getElementById('newTestDuration').value);
@@ -1141,7 +1144,15 @@
 
       stealthViolationsLog = [];
       currentQuestionIndex = 0;
-      userAnswers = new Array(currentTest.questions.length).fill(null);
+      
+      // Load saved answers from sessionStorage if available (Session Recovery)
+      const savedSession = sessionStorage.getItem('ischool_active_exam_' + testId);
+      if (savedSession) {
+        userAnswers = JSON.parse(savedSession);
+      } else {
+        userAnswers = new Array(currentTest.questions.length).fill(null);
+      }
+
       flaggedQuestions = {};
       showSection('examScreen');
       document.getElementById('currentTestTitle').innerText = currentTest.title;
@@ -1200,6 +1211,10 @@
         const input = document.getElementById('openAnswerInput');
         if (input) userAnswers[currentQuestionIndex] = input.value.trim() || null;
       }
+      // Session Recovery sync
+      if (currentTest) {
+        sessionStorage.setItem('ischool_active_exam_' + currentTest.id, JSON.stringify(userAnswers));
+      }
     }
 
     function jumpToQuestion(idx) { currentQuestionIndex = idx; renderQuestionNavGrid(); renderQuestion(); }
@@ -1227,6 +1242,7 @@
     function finishExam(isAutoSubmit) {
       if (timerInterval) clearInterval(timerInterval);
       if (isDesmosOpen) toggleDesmos();
+      if (currentTest) sessionStorage.removeItem('ischool_active_exam_' + currentTest.id);
 
       let correctCount = 0;
       let reviewHtml = "";
@@ -1270,7 +1286,7 @@
         testTitle: currentTest.title,
         score: `${correctCount} / ${currentTest.questions.length}`,
         violationsLog: [...stealthViolationsLog],
-        teacherNote: "Great attempt!",
+        teacherNote: stealthViolationsLog.length > 2 ? "Warning: Flagged for frequent tab switching!" : "Clean attempt!",
         date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " " + new Date().toLocaleDateString(),
         detailedLog
       });
@@ -1289,13 +1305,30 @@
       renderErrorNotebook();
     }
 
+    // ADVANCED ANTI-CHEAT & PROCTORING SYSTEM
     function registerCheat() {
       if (!document.getElementById('examScreen').classList.contains('hidden')) {
-        stealthViolationsLog.push(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        stealthViolationsLog.push(timestamp);
       }
     }
+
     document.addEventListener("visibilitychange", () => { if (document.hidden) registerCheat(); });
     window.addEventListener("blur", () => registerCheat());
+    
+    // Block Developer Tools Shortcuts & Inspection
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C")) || (e.ctrlKey && e.key === "U")) {
+        e.preventDefault();
+        alert("⚠️ Security Warning: Inspecting code or opening developer tools during active examination is strictly prohibited!");
+        registerCheat();
+      }
+    });
+
+    document.addEventListener("contextmenu", e => {
+      e.preventDefault();
+      alert("⚠️ Right-click is disabled during exams.");
+    });
 
     function renderTeacherTestInspector() {
       const display = document.getElementById('teacherTestListDisplay');
@@ -1325,7 +1358,7 @@
           <td class="p-4 font-bold text-white">${r.student}</td>
           <td class="p-4 text-slate-300">${r.testTitle}</td>
           <td class="p-4 text-emerald-400 font-bold">${r.score}</td>
-          <td class="p-4">${r.violationsLog.length > window.undefined ? `<span class="text-red-400">${r.violationsLog.length} violations</span>` : '<span class="text-emerald-400">Clean</span>'}</td>
+          <td class="p-4">${r.violationsLog && r.violationsLog.length > 0 ? `<span class="text-red-400 font-bold">${r.violationsLog.length} violations (${r.violationsLog.join(', ')})</span>` : '<span class="text-emerald-400 font-semibold">0 (Clean Exam)</span>'}</td>
           <td class="p-4"><button onclick="playClickSound(); openDiagnostics(${r.id});" class="bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-xl text-xs font-semibold">🔍 View</button></td>
         </tr>
       `).join('');
@@ -1347,7 +1380,6 @@
 
     function closeDiagModal() { document.getElementById('diagModal').classList.add('hidden'); }
     function exportResultsCSV() { alert("CSV Export ready!"); }
-    document.addEventListener("contextmenu", e => e.preventDefault());
   </script>
 </body>
 </html>
