@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iSchool.Prep — Enterprise Elite v16.0 Ultimate</title>
+  <title>iSchool.Prep — Proctored Enterprise Elite v17.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Official Desmos Calculator API v1.11 -->
   <script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
@@ -18,7 +18,7 @@
     ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.8); }
     .glass-card {
-      background: rgba(15, 23, 42, 0.72);
+      background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(59, 130, 246, 0.22);
@@ -31,6 +31,11 @@
       transform: translateY(-4px);
       border-color: rgba(59, 130, 246, 0.6);
       box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.35);
+    }
+    .eliminated {
+      opacity: 0.35;
+      text-decoration: line-through;
+      filter: grayscale(1);
     }
   </style>
 </head>
@@ -45,9 +50,9 @@
       <div>
         <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
           iSchool.<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Prep</span> 
-          <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono font-semibold">ELITE v16.0</span>
+          <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono font-semibold">ENTERPRISE v17.0</span>
         </h1>
-        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Ultimate Academic Intelligence & Secure Proctoring</p>
+        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Official Digital Exam & Analytics Platform</p>
       </div>
     </div>
     <div class="flex items-center gap-4">
@@ -82,6 +87,40 @@
       <button onclick="playClickSound(); closeResultModal();" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 rounded-2xl transition shadow-xl shadow-blue-600/30 shrink-0 text-sm tracking-wide">
         Return to Student Dashboard
       </button>
+    </div>
+  </div>
+
+  <!-- SCIENTIFIC CALCULATOR MODAL -->
+  <div id="sciCalcModal" class="hidden fixed right-6 bottom-6 bg-slate-900/95 border border-blue-500/30 p-5 rounded-3xl z-50 shadow-2xl backdrop-blur-xl w-72 space-y-3">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+      <h4 class="text-xs font-bold text-blue-400">🧮 Scientific Calculator</h4>
+      <button onclick="toggleSciCalc()" class="text-slate-400 hover:text-white text-xs">✕</button>
+    </div>
+    <input type="text" id="sciCalcDisplay" readonly class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-right text-lg font-mono text-emerald-400 focus:outline-none shadow-inner">
+    <div class="grid grid-cols-4 gap-2 text-xs font-bold font-mono">
+      <button onclick="calcInput('C')" class="bg-red-500/20 text-red-400 p-2 rounded-lg">C</button>
+      <button onclick="calcInput('(')" class="bg-slate-800 p-2 rounded-lg">(</button>
+      <button onclick="calcInput(')')" class="bg-slate-800 p-2 rounded-lg">)</button>
+      <button onclick="calcInput('/')" class="bg-blue-600/40 text-blue-300 p-2 rounded-lg">÷</button>
+
+      <button onclick="calcInput('7')" class="bg-slate-800 p-2.5 rounded-lg">7</button>
+      <button onclick="calcInput('8')" class="bg-slate-800 p-2.5 rounded-lg">8</button>
+      <button onclick="calcInput('9')" class="bg-slate-800 p-2.5 rounded-lg">9</button>
+      <button onclick="calcInput('*')" class="bg-blue-600/40 text-blue-300 p-2.5 rounded-lg">×</button>
+
+      <button onclick="calcInput('4')" class="bg-slate-800 p-2.5 rounded-lg">4</button>
+      <button onclick="calcInput('5')" class="bg-slate-800 p-2.5 rounded-lg">5</button>
+      <button onclick="calcInput('6')" class="bg-slate-800 p-2.5 rounded-lg">6</button>
+      <button onclick="calcInput('-')" class="bg-blue-600/40 text-blue-300 p-2.5 rounded-lg">-</button>
+
+      <button onclick="calcInput('1')" class="bg-slate-800 p-2.5 rounded-lg">1</button>
+      <button onclick="calcInput('2')" class="bg-slate-800 p-2.5 rounded-lg">2</button>
+      <button onclick="calcInput('3')" class="bg-slate-800 p-2.5 rounded-lg">3</button>
+      <button onclick="calcInput('+')" class="bg-blue-600/40 text-blue-300 p-2.5 rounded-lg">+</button>
+
+      <button onclick="calcInput('0')" class="bg-slate-800 p-2.5 rounded-lg col-span-2">0</button>
+      <button onclick="calcInput('.')" class="bg-slate-800 p-2.5 rounded-lg">.</button>
+      <button onclick="calcInput('=')" class="bg-emerald-600 text-white p-2.5 rounded-lg">=</button>
     </div>
   </div>
 
@@ -142,7 +181,7 @@
       
       <div class="text-center mb-8">
         <h2 class="text-2xl font-black text-white tracking-tight">iSchool Enterprise Portal</h2>
-        <p class="text-xs text-slate-400 mt-1.5">Secure Authentication Network v16</p>
+        <p class="text-xs text-slate-400 mt-1.5">Secure Authentication Network v17</p>
       </div>
 
       <div class="flex gap-2 mb-6 bg-slate-950/85 p-1.5 rounded-2xl border border-slate-800 shadow-inner">
@@ -305,14 +344,17 @@
           <h3 id="currentTestTitle" class="text-base font-bold text-blue-400">Exam Module</h3>
           <span id="examDurationText" class="text-xs text-slate-400">Time Limit</span>
         </div>
-        <div class="flex items-center gap-3">
-          <button onclick="playClickSound(); toggleScratchpad();" class="bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 border border-amber-500/30 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow">
+        <div class="flex items-center gap-2">
+          <button onclick="playClickSound(); toggleSciCalc();" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 border border-blue-500/30 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow">
+            🧮 Sci-Calc
+          </button>
+          <button onclick="playClickSound(); toggleScratchpad();" class="bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 border border-amber-500/30 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow">
             📝 Scratchpad
           </button>
-          <button id="desmosBtn" onclick="playClickSound(); toggleDesmos();" class="hidden bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 px-4 py-2 rounded-xl text-xs font-bold transition items-center gap-1.5 shadow">
-            🧮 Desmos Calculator
+          <button id="desmosBtn" onclick="playClickSound(); toggleDesmos();" class="hidden bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 px-3.5 py-2 rounded-xl text-xs font-bold transition items-center gap-1 shadow">
+            📈 Desmos
           </button>
-          <span id="examTimer" class="bg-slate-950/90 border border-blue-500/40 px-4.5 py-2 rounded-xl text-sm font-mono text-amber-400 font-bold shadow-inner">⏱️ --:--</span>
+          <span id="examTimer" class="bg-slate-950/90 border border-blue-500/40 px-4 py-2 rounded-xl text-sm font-mono text-amber-400 font-bold shadow-inner">⏱️ --:--</span>
         </div>
       </div>
 
@@ -360,10 +402,13 @@
       <div class="glass-card p-7 rounded-[2.5xl] flex justify-between items-center shadow-2xl neon-glow">
         <div>
           <h2 id="teacherWelcomeTitle" class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Instructor Command Center</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Classroom Heatmap Analytics, Exam Builder & Detailed Stealth Audit Logs</p>
+          <p class="text-xs text-slate-400 mt-0.5">Classroom Heatmap Analytics, Exam Builder & Backup Tools</p>
         </div>
         <div class="flex gap-2.5">
-          <button onclick="playClickSound(); exportResultsCSV();" class="bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 border border-emerald-500/30 px-4 py-2.5 rounded-xl text-xs font-semibold transition shadow">
+          <button onclick="playClickSound(); exportFullBackup();" class="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition shadow">
+            💾 Backup JSON
+          </button>
+          <button onclick="playClickSound(); exportResultsCSV();" class="bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 border border-emerald-500/30 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition shadow">
             📥 Export CSV
           </button>
           <button onclick="playClickSound(); logout();" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-4 py-2.5 rounded-xl border border-slate-700 transition">Sign Out</button>
@@ -464,7 +509,7 @@
 
         <div class="space-y-3">
           <div class="flex justify-between items-center">
-            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">📦 Available Question Bank Items (Select to Build Exam):</h4>
+            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">📦 Available Question Bank Items:</h4>
             <button onclick="selectAllBankQuestions()" class="text-xs text-blue-400 hover:underline">Select All / Clear</button>
           </div>
           <div id="bankQuestionsDisplayList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1 custom-scrollbar"></div>
@@ -479,7 +524,7 @@
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input type="text" id="newTestTitle" placeholder="Exam Module Title (e.g. Advanced SAT Math Test #2)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
+          <input type="text" id="newTestTitle" placeholder="Exam Module Title (e.g. SAT Math Practice #2)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
           <input type="number" id="newTestDuration" placeholder="Time Limit (Minutes)" class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-2xl text-xs focus:outline-none focus:border-blue-500 shadow-inner">
         </div>
 
@@ -545,11 +590,26 @@
     let currentQuestionIndex = 0;
     let userAnswers = [];
     let flaggedQuestions = {};
+    let eliminatedOptions = {}; // Cross-out state per question
     let timerInterval = null;
     let timeLeftSeconds = 0;
     let desmosCalculator = null;
     let isDesmosOpen = false;
     
+    // SCIENTIFIC CALCULATOR LOGIC
+    let sciCalcVal = "";
+    function toggleSciCalc() {
+      document.getElementById('sciCalcModal').classList.toggle('hidden');
+    }
+    function calcInput(val) {
+      const disp = document.getElementById('sciCalcDisplay');
+      if (val === 'C') { sciCalcVal = ""; disp.value = ""; }
+      else if (val === '=') {
+        try { sciCalcVal = eval(sciCalcVal).toString(); disp.value = sciCalcVal; }
+        catch(e) { disp.value = "Error"; sciCalcVal = ""; }
+      } else { sciCalcVal += val; disp.value = sciCalcVal; }
+    }
+
     // QUESTION BANK STATE
     let questionBank = JSON.parse(localStorage.getItem('ischool_question_bank')) || [
       { id: 101, section: "math", type: "mcq", imageUrl: "", options: ["A) 5", "B) 3", "C) 15", "D) 2"], correct: "A" }
@@ -571,9 +631,7 @@
       { word: "Cacophony", definition: "A harsh, discordant mixture of sounds." },
       { word: "Altruistic", definition: "Showing selfless concern for the well-being of others." },
       { word: "Ineffable", definition: "Too great or extreme to be expressed in words." },
-      { word: "Obfuscate", definition: "Render obscure, unclear, or unintelligible." },
-      { word: "Aberration", definition: "A departure from what is normal, usual, or expected." },
-      { word: "Acquiesce", definition: "Accept something reluctantly but without protest." }
+      { word: "Obfuscate", definition: "Render obscure, unclear, or unintelligible." }
     ];
     let currentVocabIdx = 0;
     let isVocabFlipped = false;
@@ -594,12 +652,7 @@
         duration: 35,
         section: "math",
         questions: [
-          { 
-            imageUrl: "",
-            type: "mcq",
-            options: ["A) 5", "B) 3", "C) 15", "D) 2"], 
-            correct: "A" 
-          }
+          { imageUrl: "", type: "mcq", options: ["A) 5", "B) 3", "C) 15", "D) 2"], correct: "A" }
         ]
       }
     ];
@@ -612,7 +665,6 @@
       renderStudentsList();
     });
 
-    // POMODORO LOGIC
     function togglePomodoro() {
       const btn = document.getElementById('pomoBtn');
       if (isPomoRunning) {
@@ -639,11 +691,8 @@
       }
     }
 
-    function toggleScratchpad() {
-      document.getElementById('scratchpadModal').classList.toggle('hidden');
-    }
+    function toggleScratchpad() { document.getElementById('scratchpadModal').classList.toggle('hidden'); }
 
-    // STUDENT TABS
     function switchStudentTab(tab) {
       document.getElementById('studentTabExamsContent').classList.add('hidden');
       document.getElementById('studentTabErrorsContent').classList.add('hidden');
@@ -897,7 +946,6 @@
       display.innerHTML = students.map(s => `<span class="bg-slate-950 border border-slate-800 text-xs px-3.5 py-2 rounded-xl text-slate-300 shadow-inner"><b>${s.firstName} ${s.lastName}</b> (${s.track.toUpperCase()}): <span class="text-blue-400 font-mono">${s.pin}</span></span>`).join('');
     }
 
-    // QUESTION BANK FUNCTIONS
     function saveQuestionToBank() {
       const qType = document.getElementById('bankQuestionType').value;
       const qSection = document.getElementById('bankQuestionSection').value;
@@ -1144,7 +1192,8 @@
 
       stealthViolationsLog = [];
       currentQuestionIndex = 0;
-      
+      eliminatedOptions = {};
+
       const savedSession = sessionStorage.getItem('ischool_active_exam_' + testId);
       if (savedSession) {
         userAnswers = JSON.parse(savedSession);
@@ -1201,6 +1250,12 @@
       else { btn.className = "text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-lg font-bold transition hover:bg-amber-500/20"; btn.innerText = "🚩 Flag for Review"; }
     }
 
+    function toggleEliminateOption(optKey) {
+      const key = currentQuestionIndex + '_' + optKey;
+      eliminatedOptions[key] = !eliminatedOptions[key];
+      renderQuestion();
+    }
+
     function saveCurrentAnswer() {
       const q = currentTest.questions[currentQuestionIndex];
       if (q.type === 'mcq') {
@@ -1226,7 +1281,20 @@
       const savedVal = userAnswers[currentQuestionIndex];
 
       if (q.type === 'mcq') {
-        answersContainer.innerHTML = q.options.map(opt => `<label class="block bg-slate-950/80 border border-slate-800 p-4 rounded-2xl cursor-pointer hover:border-blue-500 transition shadow-inner"><input type="radio" name="opt" value="${opt[0]}" ${savedVal === opt[0] ? 'checked' : ''} class="mr-3 accent-blue-500"> ${opt}</label>`).join('');
+        answersContainer.innerHTML = q.options.map(opt => {
+          const optKey = opt[0];
+          const isEliminated = eliminatedOptions[currentQuestionIndex + '_' + optKey];
+          return `
+            <div class="flex items-center gap-2">
+              <label class="flex-1 bg-slate-950/80 border border-slate-800 p-4 rounded-2xl cursor-pointer hover:border-blue-500 transition shadow-inner ${isEliminated ? 'eliminated' : ''}">
+                <input type="radio" name="opt" value="${optKey}" ${savedVal === optKey ? 'checked' : ''} class="mr-3 accent-blue-500"> ${opt}
+              </label>
+              <button onclick="playClickSound(); toggleEliminateOption('${optKey}')" title="Cross out option" class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 p-3 rounded-2xl text-xs font-bold transition">
+                ❌
+              </button>
+            </div>
+          `;
+        }).join('');
       } else {
         answersContainer.innerHTML = `<div class="space-y-3 pt-6"><label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Student-Produced Response:</label><input type="text" id="openAnswerInput" value="${savedVal || ''}" placeholder="e.g. 12.5" class="w-full bg-slate-950 border border-slate-800 p-4 rounded-2xl text-xl font-mono text-center focus:outline-none focus:border-blue-500 text-white shadow-inner"></div>`;
       }
@@ -1317,7 +1385,7 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C")) || (e.ctrlKey && e.key === "U")) {
         e.preventDefault();
-        alert("⚠️ Security Warning: Inspecting code or opening developer tools during active examination is strictly prohibited!");
+        alert("⚠️ Security Warning: Inspecting code during active examination is strictly prohibited!");
         registerCheat();
       }
     });
@@ -1376,7 +1444,27 @@
     }
 
     function closeDiagModal() { document.getElementById('diagModal').classList.add('hidden'); }
-    function exportResultsCSV() { alert("CSV Export ready!"); }
+
+    function exportFullBackup() {
+      const data = { students, tests, questionBank, results };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `ischool_backup_${Date.now()}.json`;
+      a.click();
+    }
+
+    function exportResultsCSV() {
+      let csv = "Student,Exam,Score,Violations,Date\n";
+      results.forEach(r => {
+        csv += `"${r.student}","${r.testTitle}","${r.score}","${r.violationsLog?r.violationsLog.length:0}","${r.date}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ischool_results.csv';
+      a.click();
+    }
   </script>
 </body>
 </html>
