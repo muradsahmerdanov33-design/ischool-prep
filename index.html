@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iSchool.Prep — Proctored Enterprise Elite v17.0</title>
+  <title>iSchool.Prep — Cyber Arcade Elite v18.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Official Desmos Calculator API v1.11 -->
   <script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
@@ -26,47 +26,78 @@
     }
     .neon-glow { box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.4); }
     .neon-glow-indigo { box-shadow: 0 0 50px -10px rgba(99, 102, 241, 0.4); }
+    .neon-glow-amber { box-shadow: 0 0 50px -10px rgba(245, 158, 11, 0.4); }
     .card-hover { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
     .card-hover:hover {
       transform: translateY(-4px);
       border-color: rgba(59, 130, 246, 0.6);
       box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.35);
     }
-    .eliminated {
-      opacity: 0.35;
-      text-decoration: line-through;
-      filter: grayscale(1);
-    }
+    .eliminated { opacity: 0.35; text-decoration: line-through; filter: grayscale(1); }
+    @keyframes pulse-fast { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+    .streak-anim { animation: pulse-fast 0.6s infinite ease-in-out; }
   </style>
 </head>
 <body class="text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white pb-16">
 
   <!-- HEADER NAVIGATION -->
-  <header class="backdrop-blur-2xl bg-slate-950/85 border-b border-blue-500/20 sticky top-0 z-40 px-8 py-4 flex justify-between items-center shadow-2xl">
+  <header class="backdrop-blur-2xl bg-slate-950/85 border-b border-blue-500/20 sticky top-0 z-40 px-8 py-3.5 flex justify-between items-center shadow-2xl">
     <div class="flex items-center gap-3">
       <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/40 text-white font-black text-2xl tracking-tighter">
         i
       </div>
       <div>
         <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
-          iSchool.<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Prep</span> 
-          <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono font-semibold">ENTERPRISE v17.0</span>
+          iSchool.<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-amber-400">Prep</span> 
+          <span class="bg-amber-500/20 text-amber-300 text-[10px] px-2.5 py-0.5 rounded-full border border-amber-500/40 font-mono font-bold">CYBER ARCADE v18.0</span>
         </h1>
-        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Official Digital Exam & Analytics Platform</p>
+        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Gamified SAT Cyber-Prep & AI Proctoring</p>
       </div>
     </div>
+    
     <div class="flex items-center gap-4">
+      <!-- AUDIO FOCUS PLAYER -->
+      <div class="hidden lg:flex items-center gap-2 bg-slate-900/90 border border-slate-700/80 px-3 py-1.5 rounded-full text-xs">
+        <span class="text-xs">🎧 Radio:</span>
+        <select id="audioRadioSelect" onchange="changeFocusMusic()" class="bg-slate-950 text-blue-300 font-mono text-[11px] rounded-lg px-2 py-1 border border-blue-500/30 focus:outline-none">
+          <option value="off">Off 🔇</option>
+          <option value="lofi">Lo-Fi Study Beats 🎹</option>
+          <option value="cyber">Cyber Synthwave ⚡</option>
+        </select>
+        <audio id="focusAudio" loop></audio>
+      </div>
+
+      <!-- POMODORO -->
       <div id="pomodoroWidget" class="hidden md:flex items-center gap-3 bg-slate-900/90 border border-slate-700/80 px-4 py-2 rounded-full text-xs font-mono text-amber-400 shadow-inner">
         <span>🍅 <span id="pomoTimer" class="font-bold">25:00</span></span>
         <button onclick="togglePomodoro()" id="pomoBtn" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/40 px-2.5 py-1 rounded-lg text-amber-300 font-sans transition">Start</button>
       </div>
+
       <div id="userInfo" class="text-xs font-semibold bg-slate-900/90 border border-blue-500/30 px-5 py-2.5 rounded-full text-slate-200 shadow-inner flex items-center gap-2.5">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> Not Authenticated
       </div>
     </div>
   </header>
 
-  <!-- EXAM RESULT & REVIEW MODAL -->
+  <!-- SPEED DRILL 60s MODAL -->
+  <div id="speedDrillModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-2xl z-50 flex items-center justify-center p-4">
+    <div class="glass-card p-8 rounded-[2.5xl] max-w-2xl w-full text-center space-y-6 shadow-2xl relative border-amber-500/40 neon-glow-amber">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-lg font-black text-amber-400 flex items-center gap-2">⚡ 60-Second Speed Drill Arena</h3>
+        <button onclick="closeSpeedDrill()" class="text-slate-400 hover:text-white text-xs font-bold">✕ Close</button>
+      </div>
+      <div class="flex justify-around bg-slate-950/80 p-4 rounded-2xl border border-slate-800 font-mono">
+        <div><span class="text-[10px] text-slate-400 block">TIME LEFT</span><span id="drillTimer" class="text-2xl font-black text-amber-400">60s</span></div>
+        <div><span class="text-[10px] text-slate-400 block">CURRENT SCORE</span><span id="drillScore" class="text-2xl font-black text-emerald-400">0</span></div>
+        <div><span class="text-[10px] text-slate-400 block">STREAK</span><span id="drillStreak" class="text-2xl font-black text-blue-400">🔥 0</span></div>
+      </div>
+      <div id="drillQuestionArea" class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4 text-left min-h-[220px] flex flex-col justify-center">
+        <!-- Dynamic Drill Question -->
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAM RESULT MODAL -->
   <div id="resultModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-xl z-50 flex items-center justify-center p-4">
     <div class="glass-card p-8 rounded-[2.5xl] max-w-4xl w-full text-center space-y-6 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col neon-glow">
       <div id="resultBadge" class="w-20 h-20 mx-auto rounded-3xl flex items-center justify-center text-4xl shadow-xl bg-gradient-to-tr from-blue-600/20 to-indigo-600/20 border border-blue-500/40">🏆</div>
@@ -124,7 +155,7 @@
     </div>
   </div>
 
-  <!-- INSTRUCTOR & TUTOR MODALS -->
+  <!-- INSTRUCTOR DIAGNOSTICS MODAL -->
   <div id="diagModal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-xl z-50 flex items-center justify-center p-4">
     <div class="glass-card p-8 rounded-[2.5xl] max-w-5xl w-full space-y-6 shadow-2xl relative overflow-hidden max-h-[90vh] flex flex-col neon-glow">
       <div class="flex justify-between items-center border-b border-slate-800/80 pb-4">
@@ -181,7 +212,7 @@
       
       <div class="text-center mb-8">
         <h2 class="text-2xl font-black text-white tracking-tight">iSchool Enterprise Portal</h2>
-        <p class="text-xs text-slate-400 mt-1.5">Secure Authentication Network v17</p>
+        <p class="text-xs text-slate-400 mt-1.5">Secure Authentication Network v18</p>
       </div>
 
       <div class="flex gap-2 mb-6 bg-slate-950/85 p-1.5 rounded-2xl border border-slate-800 shadow-inner">
@@ -234,7 +265,12 @@
             <span id="studentBadgeRank" class="bg-blue-500/20 text-blue-300 border border-blue-500/40 text-[10px] px-3.5 py-1 rounded-full font-bold shadow-sm">👑 Grandmaster Scholar</span>
           </div>
         </div>
-        <button onclick="playClickSound(); logout();" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-5 py-2.5 rounded-xl border border-slate-700/80 transition">Sign Out</button>
+        <div class="flex gap-2.5 items-center">
+          <button onclick="startSpeedDrill()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-amber-500/30 transition flex items-center gap-1.5">
+            ⚡ 60s Speed Drill
+          </button>
+          <button onclick="playClickSound(); logout();" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-4 py-2.5 rounded-xl border border-slate-700/80 transition">Sign Out</button>
+        </div>
       </div>
 
       <!-- TABS NAVIGATION -->
@@ -590,17 +626,103 @@
     let currentQuestionIndex = 0;
     let userAnswers = [];
     let flaggedQuestions = {};
-    let eliminatedOptions = {}; // Cross-out state per question
+    let eliminatedOptions = {};
     let timerInterval = null;
     let timeLeftSeconds = 0;
     let desmosCalculator = null;
     let isDesmosOpen = false;
-    
+
+    // AUDIO RADIO STREAMS
+    function changeFocusMusic() {
+      const val = document.getElementById('audioRadioSelect').value;
+      const audio = document.getElementById('focusAudio');
+      if (val === 'lofi') {
+        audio.src = "https://stream.zeno.fm/f3wvbbqmdg8uv";
+        audio.play().catch(()=>{});
+      } else if (val === 'cyber') {
+        audio.src = "https://stream.zeno.fm/0r0xa792kwzuv";
+        audio.play().catch(()=>{});
+      } else {
+        audio.pause();
+      }
+    }
+
+    // SPEED DRILL 60s STATE
+    let drillTimer = 60;
+    let drillScore = 0;
+    let drillStreak = 0;
+    let drillInterval = null;
+    let currentDrillQ = null;
+
+    function startSpeedDrill() {
+      if (questionBank.length === 0) return alert("Question Bank is empty! Ask instructor to add questions.");
+      drillTimer = 60;
+      drillScore = 0;
+      drillStreak = 0;
+      document.getElementById('drillTimer').innerText = `${drillTimer}s`;
+      document.getElementById('drillScore').innerText = drillScore;
+      document.getElementById('drillStreak').innerText = `🔥 0`;
+      document.getElementById('speedDrillModal').classList.remove('hidden');
+      
+      nextDrillQuestion();
+      if (drillInterval) clearInterval(drillInterval);
+      drillInterval = setInterval(() => {
+        drillTimer--;
+        document.getElementById('drillTimer').innerText = `${drillTimer}s`;
+        if (drillTimer <= 0) {
+          clearInterval(drillInterval);
+          alert(`⚡ Speed Drill Completed! Final Score: ${drillScore} pts`);
+          closeSpeedDrill();
+        }
+      }, 1000);
+    }
+
+    function closeSpeedDrill() {
+      if (drillInterval) clearInterval(drillInterval);
+      document.getElementById('speedDrillModal').classList.add('hidden');
+    }
+
+    function nextDrillQuestion() {
+      currentDrillQ = questionBank[Math.floor(Math.random() * questionBank.length)];
+      const area = document.getElementById('drillQuestionArea');
+      if (currentDrillQ.type === 'mcq') {
+        area.innerHTML = `
+          ${currentDrillQ.imageUrl ? `<img src="${currentDrillQ.imageUrl}" class="max-h-32 object-contain mx-auto rounded-lg mb-3">` : ''}
+          <div class="grid grid-cols-2 gap-3">
+            ${currentDrillQ.options.map(opt => `
+              <button onclick="checkDrillAns('${opt[0]}')" class="bg-slate-900 border border-slate-800 p-3 rounded-xl hover:border-amber-400 font-bold text-xs text-slate-200 transition">
+                ${opt}
+              </button>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        area.innerHTML = `
+          ${currentDrillQ.imageUrl ? `<img src="${currentDrillQ.imageUrl}" class="max-h-32 object-contain mx-auto rounded-lg mb-3">` : ''}
+          <div class="flex gap-2">
+            <input type="text" id="drillOpenInput" placeholder="Enter answer..." class="flex-1 bg-slate-900 border border-slate-800 p-3 rounded-xl text-xs focus:outline-none focus:border-amber-400">
+            <button onclick="checkDrillAns(document.getElementById('drillOpenInput').value.trim())" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-3 rounded-xl text-xs transition">Submit</button>
+          </div>
+        `;
+      }
+    }
+
+    function checkDrillAns(ans) {
+      if (ans.toUpperCase() === currentDrillQ.correct.toUpperCase()) {
+        drillStreak++;
+        drillScore += 10 * drillStreak;
+        playClickSound();
+      } else {
+        drillStreak = 0;
+      }
+      document.getElementById('drillScore').innerText = drillScore;
+      document.getElementById('drillStreak').innerText = `🔥 ${drillStreak}`;
+      nextDrillQuestion();
+    }
+
     // SCIENTIFIC CALCULATOR LOGIC
     let sciCalcVal = "";
-    function toggleSciCalc() {
-      document.getElementById('sciCalcModal').classList.toggle('hidden');
-    }
+    function toggleSciCalc() { document.getElementById('sciCalcModal').classList.toggle('hidden'); }
     function calcInput(val) {
       const disp = document.getElementById('sciCalcDisplay');
       if (val === 'C') { sciCalcVal = ""; disp.value = ""; }
