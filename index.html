@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iSchool.Prep — Enterprise Elite v15.0 Secure Pro</title>
+  <title>iSchool.Prep — Enterprise Elite v16.0 Ultimate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Official Desmos Calculator API v1.11 -->
   <script src="https://www.desmos.com/api/v1.11/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
@@ -18,19 +18,19 @@
     ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.8); }
     .glass-card {
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.72);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.22);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
     }
-    .neon-glow { box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.35); }
-    .neon-glow-red { box-shadow: 0 0 50px -10px rgba(239, 68, 68, 0.4); }
+    .neon-glow { box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.4); }
+    .neon-glow-indigo { box-shadow: 0 0 50px -10px rgba(99, 102, 241, 0.4); }
     .card-hover { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
     .card-hover:hover {
       transform: translateY(-4px);
-      border-color: rgba(59, 130, 246, 0.5);
-      box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.3);
+      border-color: rgba(59, 130, 246, 0.6);
+      box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.35);
     }
   </style>
 </head>
@@ -45,9 +45,9 @@
       <div>
         <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
           iSchool.<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Prep</span> 
-          <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono font-semibold">ELITE v15.0 PRO</span>
+          <span class="bg-blue-500/10 text-blue-400 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono font-semibold">ELITE v16.0</span>
         </h1>
-        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Next-Gen Secure Academic Intelligence & Proctoring</p>
+        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Ultimate Academic Intelligence & Secure Proctoring</p>
       </div>
     </div>
     <div class="flex items-center gap-4">
@@ -142,7 +142,7 @@
       
       <div class="text-center mb-8">
         <h2 class="text-2xl font-black text-white tracking-tight">iSchool Enterprise Portal</h2>
-        <p class="text-xs text-slate-400 mt-1.5">Secure Authentication Network v15</p>
+        <p class="text-xs text-slate-400 mt-1.5">Secure Authentication Network v16</p>
       </div>
 
       <div class="flex gap-2 mb-6 bg-slate-950/85 p-1.5 rounded-2xl border border-slate-800 shadow-inner">
@@ -218,7 +218,7 @@
           </div>
           <div class="glass-card p-6 rounded-3xl shadow-xl card-hover">
             <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Target SAT Score</span>
-            <h4 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 mt-1.5">1400+ 🎯</h4>
+            <h4 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 mt-1.5">1500+ 🎯</h4>
           </div>
         </div>
 
@@ -1145,7 +1145,6 @@
       stealthViolationsLog = [];
       currentQuestionIndex = 0;
       
-      // Load saved answers from sessionStorage if available (Session Recovery)
       const savedSession = sessionStorage.getItem('ischool_active_exam_' + testId);
       if (savedSession) {
         userAnswers = JSON.parse(savedSession);
@@ -1211,7 +1210,6 @@
         const input = document.getElementById('openAnswerInput');
         if (input) userAnswers[currentQuestionIndex] = input.value.trim() || null;
       }
-      // Session Recovery sync
       if (currentTest) {
         sessionStorage.setItem('ischool_active_exam_' + currentTest.id, JSON.stringify(userAnswers));
       }
@@ -1316,7 +1314,6 @@
     document.addEventListener("visibilitychange", () => { if (document.hidden) registerCheat(); });
     window.addEventListener("blur", () => registerCheat());
     
-    // Block Developer Tools Shortcuts & Inspection
     document.addEventListener("keydown", (e) => {
       if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C")) || (e.ctrlKey && e.key === "U")) {
         e.preventDefault();
